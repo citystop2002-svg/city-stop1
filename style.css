@@ -135,7 +135,7 @@ body.dark header{
 /* LOGO HEADER */
 
 .logo img{
-  width:440px;
+  width:500px;
   object-fit:contain;
   transition:0.3s;
 }
