@@ -10,8 +10,15 @@ const productList = document.getElementById("productList");
 
 const adminSearch = document.getElementById("adminSearch");
 const brandFilter = document.getElementById("brandFilter");
+const stockFilter = document.getElementById("stockFilter");
 const clearFiltersBtn = document.getElementById("clearFiltersBtn");
 const adminCounter = document.getElementById("adminCounter");
+
+const totalCount = document.getElementById("totalCount");
+const availableCount = document.getElementById("availableCount");
+const soldOutCount = document.getElementById("soldOutCount");
+const lowCount = document.getElementById("lowCount");
+const lastCount = document.getElementById("lastCount");
 
 let productosAdmin = [];
 
@@ -19,8 +26,8 @@ let productosAdmin = [];
 
 document.getElementById("loginBtn").addEventListener("click", () => {
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   auth.signInWithEmailAndPassword(email, password)
     .catch(error => alert(error.message));
@@ -48,22 +55,19 @@ auth.onAuthStateChanged(user => {
 
 });
 
-/* MOSTRAR FORMULARIO */
+/* MOSTRAR FORM */
 
 document.getElementById("showFormBtn").addEventListener("click", () => {
 
   productForm.reset();
   document.getElementById("productId").value = "";
 
-  if(productForm.style.display === "block"){
-    productForm.style.display = "none";
-  }else{
-    productForm.style.display = "block";
-  }
+  productForm.style.display =
+  productForm.style.display === "block" ? "none" : "block";
 
 });
 
-/* IMPORTAR PRODUCTOS ACTUALES */
+/* IMPORTAR */
 
 document.getElementById("importBtn").addEventListener("click", async () => {
 
@@ -82,7 +86,7 @@ document.getElementById("importBtn").addEventListener("click", async () => {
 
 });
 
-/* GUARDAR PRODUCTO */
+/* GUARDAR */
 
 productForm.addEventListener("submit", async e => {
 
@@ -123,7 +127,7 @@ productForm.addEventListener("submit", async e => {
 
 });
 
-/* CARGAR PRODUCTOS */
+/* CARGAR */
 
 function cargarProductos(){
 
@@ -139,35 +143,80 @@ function cargarProductos(){
       });
     });
 
+    actualizarContadores();
     aplicarFiltrosAdmin();
 
   });
 
 }
 
-/* FILTROS ADMIN */
+/* NORMALIZAR */
+
+function normalizar(texto){
+  return (texto || "")
+    .toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+/* CONTADORES */
+
+function actualizarContadores(){
+
+  totalCount.textContent = productosAdmin.length;
+
+  availableCount.textContent = productosAdmin.filter(p =>
+    normalizar(p.stock) === "disponible"
+  ).length;
+
+  soldOutCount.textContent = productosAdmin.filter(p =>
+    normalizar(p.stock) === "agotado"
+  ).length;
+
+  lowCount.textContent = productosAdmin.filter(p =>
+    normalizar(p.stock) === "pocas unidades"
+  ).length;
+
+  lastCount.textContent = productosAdmin.filter(p =>
+    normalizar(p.stock) === "ultimas piezas"
+  ).length;
+
+}
+
+/* FILTRAR */
 
 function aplicarFiltrosAdmin(){
 
-  const texto = adminSearch.value.toLowerCase();
-  const marcaSeleccionada = brandFilter.value.toLowerCase();
+  const texto = normalizar(adminSearch.value);
+  const marcaSeleccionada = normalizar(brandFilter.value);
+  const estadoSeleccionado = normalizar(stockFilter.value);
 
   const filtrados = productosAdmin.filter(producto => {
 
-    const nombre = (producto.nombre || "").toLowerCase();
-    const codigo = (producto.codigo || "").toLowerCase();
-    const marca = (producto.marca || "").toLowerCase();
+    const nombre = normalizar(producto.nombre);
+    const codigo = normalizar(producto.codigo);
+    const marca = normalizar(producto.marca);
+    const descripcion = normalizar(producto.descripcion);
+    const stock = normalizar(producto.stock);
 
     const coincideTexto =
+      texto === "" ||
       nombre.includes(texto) ||
       codigo.includes(texto) ||
-      marca.includes(texto);
+      marca.includes(texto) ||
+      descripcion.includes(texto);
 
     const coincideMarca =
       marcaSeleccionada === "todos" ||
       marca === marcaSeleccionada;
 
-    return coincideTexto && coincideMarca;
+    const coincideEstado =
+      estadoSeleccionado === "todos" ||
+      stock === estadoSeleccionado;
+
+    return coincideTexto && coincideMarca && coincideEstado;
 
   });
 
@@ -175,17 +224,17 @@ function aplicarFiltrosAdmin(){
 
 }
 
-/* MOSTRAR PRODUCTOS ADMIN */
+/* MOSTRAR */
 
 function mostrarProductosAdmin(lista){
 
   productList.innerHTML = "";
 
-  adminCounter.textContent = `Productos: ${lista.length}`;
+  adminCounter.textContent = `${lista.length} encontrados`;
 
   if(lista.length === 0){
     productList.innerHTML = `
-      <p style="padding:20px; color:#777;">
+      <p class="empty-message">
         No se encontraron productos.
       </p>
     `;
@@ -200,7 +249,7 @@ function mostrarProductosAdmin(lista){
 
         <div class="product-left">
 
-          <img src="${p.imagen}">
+          <img src="${p.imagen}" onerror="this.src='img/sin-imagen.png'">
 
           <div class="product-info">
 
@@ -240,12 +289,16 @@ function mostrarProductosAdmin(lista){
 
 }
 
+/* EVENTOS FILTROS */
+
 adminSearch.addEventListener("input", aplicarFiltrosAdmin);
 brandFilter.addEventListener("change", aplicarFiltrosAdmin);
+stockFilter.addEventListener("change", aplicarFiltrosAdmin);
 
 clearFiltersBtn.addEventListener("click", () => {
   adminSearch.value = "";
   brandFilter.value = "todos";
+  stockFilter.value = "todos";
   aplicarFiltrosAdmin();
 });
 
