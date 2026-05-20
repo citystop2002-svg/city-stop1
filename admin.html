@@ -25,37 +25,37 @@
       <button id="logoutBtn">Cerrar sesión</button>
     </div>
 
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total</h3>
+        <p id="totalCount">0</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Disponibles</h3>
+        <p id="availableCount">0</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Agotados</h3>
+        <p id="soldOutCount">0</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Pocas unidades</h3>
+        <p id="lowCount">0</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>Últimas piezas</h3>
+        <p id="lastCount">0</p>
+      </div>
+    </div>
+
     <div class="top-buttons">
       <button id="showFormBtn">➕ Agregar producto</button>
       <button id="importBtn">🚀 Importar productos actuales</button>
     </div>
-
-    <div class="admin-filters">
-
-      <input
-      type="text"
-      id="adminSearch"
-      placeholder="Buscar por nombre, código o marca...">
-
-      <select id="brandFilter">
-        <option value="todos">Todas las marcas</option>
-        <option value="toyota">Toyota</option>
-        <option value="mazda">Mazda</option>
-        <option value="chevrolet">Chevrolet</option>
-        <option value="kia">Kia</option>
-        <option value="renault">Renault</option>
-        <option value="ford">Ford</option>
-        <option value="hyundai">Hyundai</option>
-        <option value="mercedes">Mercedes</option>
-      </select>
-
-      <button id="clearFiltersBtn">Limpiar filtros</button>
-
-    </div>
-
-    <p class="admin-counter" id="adminCounter">
-      Productos: 0
-    </p>
 
     <form id="productForm">
 
@@ -82,7 +82,59 @@
 
     </form>
 
-    <div id="productList"></div>
+    <div class="admin-layout">
+
+      <aside class="admin-sidebar">
+
+        <h2>BUSCAR</h2>
+
+        <input
+        type="text"
+        id="adminSearch"
+        placeholder="Nombre, código o marca...">
+
+        <h2>MARCAS</h2>
+
+        <select id="brandFilter">
+          <option value="todos">Todas las marcas</option>
+          <option value="toyota">Toyota</option>
+          <option value="mazda">Mazda</option>
+          <option value="chevrolet">Chevrolet</option>
+          <option value="kia">Kia</option>
+          <option value="renault">Renault</option>
+          <option value="ford">Ford</option>
+          <option value="hyundai">Hyundai</option>
+          <option value="mercedes">Mercedes</option>
+        </select>
+
+        <h2>ESTADO</h2>
+
+        <select id="stockFilter">
+          <option value="todos">Todos</option>
+          <option value="disponible">Disponible</option>
+          <option value="pocas unidades">Pocas unidades</option>
+          <option value="agotado">Agotado</option>
+          <option value="últimas piezas">Últimas piezas</option>
+        </select>
+
+        <button id="clearFiltersBtn" class="clear-btn">
+          Limpiar filtros
+        </button>
+
+      </aside>
+
+      <section class="admin-products">
+
+        <div class="results-header">
+          <h2>Productos</h2>
+          <span id="adminCounter">0 encontrados</span>
+        </div>
+
+        <div id="productList"></div>
+
+      </section>
+
+    </div>
 
   </div>
 
@@ -96,3 +148,4 @@
 
 </body>
 </html>
+
