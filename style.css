@@ -899,6 +899,20 @@ footer{
 /* RESPONSIVE */
 
 @media(max-width:1200px){
+  .header-info{
+  width:100%;
+
+  justify-content:center;
+
+  flex-wrap:wrap;
+
+  gap:10px;
+}
+
+.schedule-box{
+  width:100%;
+}
+  
 
   .products{
     grid-template-columns:repeat(3,1fr);
