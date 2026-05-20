@@ -125,6 +125,28 @@ header{
 body.dark header{
   background:#1b1b1b;
 }
+
+/* CONTENEDOR HORARIOS */
+
+.header-wrapper{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* TITULO */
+
+.header-title{
+  font-size:18px;
+
+  font-weight:bold;
+
+  color:red;
+
+  text-transform:uppercase;
+
+  letter-spacing:1px;
+}
 /* HORARIOS HEADER */
 
 .header-info{
