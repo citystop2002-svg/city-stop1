@@ -990,3 +990,102 @@ footer{
   }
 
 }
+/* AJUSTE CELULAR HEADER */
+
+@media(max-width:768px){
+
+  header{
+    padding:15px;
+    gap:15px;
+  }
+
+  .header-wrapper{
+    width:100%;
+  }
+
+  .header-title{
+    font-size:20px;
+    text-align:center;
+    margin-bottom:10px;
+  }
+
+  .header-info{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  .schedule-box{
+    width:100%;
+    padding:14px 18px;
+  }
+
+  .schedule-box h3{
+    font-size:20px;
+  }
+
+  .schedule-box p{
+    font-size:16px;
+    line-height:24px;
+  }
+
+  .search-box{
+    width:100%;
+    order:2;
+  }
+
+  .dark-btn{
+    order:3;
+    align-self:center;
+  }
+
+  .hero{
+    height:140px;
+  }
+
+  .hero-logo{
+    width:240px;
+  }
+
+  .brand-filters{
+    padding:18px 10px;
+    gap:14px;
+  }
+
+  .brand-filters button{
+    min-width:130px;
+    height:58px;
+    font-size:18px;
+  }
+
+}
+
+@media(max-width:480px){
+
+  .header-title{
+    font-size:18px;
+  }
+
+  .schedule-box h3{
+    font-size:18px;
+  }
+
+  .schedule-box p{
+    font-size:15px;
+  }
+
+  .search-box input{
+    font-size:16px;
+  }
+
+  .brand-filters button{
+    min-width:125px;
+    height:55px;
+    font-size:17px;
+  }
+
+  .products{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
