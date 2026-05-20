@@ -116,11 +116,16 @@ header{
   background:white;
 
   display:flex;
+
   justify-content:space-between;
+
   align-items:center;
 
-  padding:18px 3%;
+  padding:25px 3%;
+
   gap:20px;
+
+  min-height:100px;
 }
 
 body.dark header{
