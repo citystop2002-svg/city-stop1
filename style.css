@@ -114,18 +114,12 @@ body.dark{
 
 header{
   background:white;
-
   display:flex;
-
   justify-content:space-between;
-
   align-items:center;
-
-  padding:2px 2%;
-
-  gap:10px;
-
-
+  padding:15px 3%;
+  gap:20px;
+  height:160px;
 }
 
 body.dark header{
@@ -136,11 +130,8 @@ body.dark header{
 
 .logo img{
   width:260px;
-
-  max-height:70px;
-
+  max-height:90px;
   object-fit:contain;
-
   transition:0.3s;
 }
 
