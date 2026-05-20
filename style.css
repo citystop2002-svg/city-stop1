@@ -36,7 +36,7 @@ body.dark{
 }
 
 .loader img{
-  width:220px;
+  width:400px;
   animation:pulseLogo 1.3s infinite alternate;
 }
 
@@ -135,7 +135,7 @@ body.dark header{
 /* LOGO HEADER */
 
 .logo img{
-  width:220px;
+  width:440px;
   object-fit:contain;
   transition:0.3s;
 }
