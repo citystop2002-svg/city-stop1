@@ -927,23 +927,9 @@ footer{
   color:#666;
 }
 
-/* RESPONSIVE */
+/* RESPONSIVE LIMPIO */
 
 @media(max-width:1200px){
-  .header-info{
-  width:100%;
-
-  justify-content:center;
-
-  flex-wrap:wrap;
-
-  gap:10px;
-}
-
-.schedule-box{
-  width:100%;
-}
-  
 
   .products{
     grid-template-columns:repeat(3,1fr);
@@ -955,64 +941,9 @@ footer{
 
   header{
     flex-direction:column;
-  }
-
-  .search-box{
-    width:100%;
-  }
-
-  .products{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .logo img{
-    width:140px;
-  }
-
-  .hero{
-    height:150px;
-  }
-
-  .hero-logo{
-    width:260px;
-  }
-
-}
-
-@media(max-width:480px){
-
-  .products{
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-  }
-
-  .hero{
-    height:130px;
-  }
-
-  .hero-logo{
-    width:210px;
-  }
-
-  .logo img{
-    width:120px;
-  }
-
-}
-/* ========================= */
-/* RESPONSIVE CELULAR */
-/* ========================= */
-
-@media(max-width:768px){
-
-  header{
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-
-    padding:10px;
-
-    gap:15px;
+    padding:10px 12px;
+    gap:12px;
+    height:auto;
   }
 
   .header-wrapper{
@@ -1020,32 +951,33 @@ footer{
   }
 
   .header-title{
+    font-size:16px;
     text-align:center;
-    font-size:22px;
+    margin-bottom:8px;
   }
 
   .header-info{
-    display:flex;
-    flex-direction:column;
-
-    gap:12px;
-
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
     width:100%;
   }
 
   .schedule-box{
-    width:100%;
-
-    padding:15px;
+    padding:8px 10px;
+    border-left:3px solid red;
+    border-radius:8px;
   }
 
   .schedule-box h3{
-    font-size:20px;
+    font-size:13px;
+    margin-bottom:4px;
   }
 
   .schedule-box p{
-    font-size:15px;
-    line-height:24px;
+    font-size:11px;
+    line-height:16px;
+    margin-bottom:4px;
   }
 
   .search-box{
@@ -1053,41 +985,44 @@ footer{
   }
 
   .search-box input{
-    font-size:16px;
+    height:44px;
+    font-size:14px;
+  }
+
+  .search-box button{
+    height:44px;
+    width:55px;
   }
 
   .dark-btn{
     width:55px;
-    height:55px;
+    height:45px;
   }
 
   .hero{
-    height:120px;
+    height:95px;
   }
 
   .hero-logo{
-    width:220px;
+    width:170px;
   }
 
   .brand-filters{
-    padding:15px 10px;
-
-    gap:12px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    padding:12px 8px;
+    gap:8px;
   }
 
   .brand-filters button{
-    width:42%;
-
-    min-width:130px;
-
-    height:52px;
-
-    font-size:18px;
+    width:100%;
+    min-width:0;
+    height:45px;
+    font-size:15px;
   }
 
   .products{
     grid-template-columns:repeat(2,1fr);
-
     gap:12px;
   }
 
@@ -1101,110 +1036,19 @@ footer{
 
 }
 
-/* ========================= */
-/* CELULARES PEQUEÑOS */
-/* ========================= */
-
 @media(max-width:480px){
 
-  .header-title{
-    font-size:18px;
-  }
-
   .hero{
-    height:100px;
+    height:90px;
   }
 
   .hero-logo{
-    width:180px;
+    width:150px;
   }
 
-  .brand-filters button{
-    width:45%;
-
-    min-width:120px;
-
-    height:48px;
-
-    font-size:16px;
-  }
-
-}
-/* ARREGLO FINAL CELULAR */
-
-@media(max-width:768px){
-
-  header{
-    padding:10px 12px !important;
-    gap:12px !important;
-  }
-
-  .header-wrapper{
-    width:100% !important;
-  }
-
-  .header-title{
-    font-size:16px !important;
-    text-align:center !important;
-    margin-bottom:8px !important;
-  }
-
-  .header-info{
-    display:grid !important;
-    grid-template-columns:1fr 1fr !important;
-    gap:8px !important;
-    width:100% !important;
-  }
-
-  .schedule-box{
-    padding:8px 10px !important;
-    border-left:3px solid red !important;
-    border-radius:8px !important;
-  }
-
-  .schedule-box h3{
-    font-size:13px !important;
-    margin-bottom:4px !important;
-  }
-
-  .schedule-box p{
-    font-size:11px !important;
-    line-height:16px !important;
-    margin-bottom:4px !important;
-  }
-
-  .search-box{
-    width:100% !important;
-  }
-
-  .search-box input{
-    height:44px !important;
-    font-size:14px !important;
-  }
-
-  .search-box button{
-    height:44px !important;
-    width:55px !important;
-  }
-
-  .hero{
-    height:95px !important;
-  }
-
-  .hero-logo{
-    width:170px !important;
-  }
-
-  .brand-filters{
-    padding:12px 8px !important;
-    gap:8px !important;
-  }
-
-  .brand-filters button{
-    width:46% !important;
-    min-width:0 !important;
-    height:45px !important;
-    font-size:15px !important;
+  .products{
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
   }
 
 }
