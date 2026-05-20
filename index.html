@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City Stop</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+  <!-- LOADER -->
+
+  <div class="loader" id="loader">
+    <img src="img/logo.png">
+    <p>Cargando catálogo...</p>
+  </div>
+
+  <!-- LOGO FLOTANTE -->
+
+  <img src="img/logo.png" class="watermark-logo">
+
+  <!-- BARRA SUPERIOR -->
+
+  <div class="top-bar">
+    <div class="marquee">
+      <span>
+        🚗 CITY STOP • ESPEJOS • ACCESORIOS • BOGOTÁ • CITY STOP 🚗
+      </span>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+
+  <header>
+
+    <div class="logo">
+      <img src="img/logo.png">
+    </div>
+
+    <div class="search-box">
+      <input type="text"
+      id="searchInput"
+      placeholder="Buscar espejo...">
+
+      <button>
+        <i class="fa fa-search"></i>
+      </button>
+    </div>
+
+    <button class="dark-btn" id="darkModeBtn">
+      <i class="fa fa-moon"></i>
+    </button>
+
+  </header>
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <img src="img/logo.png" class="hero-logo">
+
+      <h1>
+        CATÁLOGO DE ESPEJOS PARA CARRO
+      </h1>
+
+      <p>
+        Encuentra espejos, accesorios automotrices y atención directa por WhatsApp.
+      </p>
+
+      <div class="hero-subtext">
+        🚗 Lo mejor para tu carro 🚗
+      </div>
+
+      <a href="#products">
+        Ver catálogo
+      </a>
+
+    </div>
+
+  </section>
+
+  <!-- FILTROS -->
+
+  <nav class="brand-filters">
+
+    <button data-marca="todos" class="active">
+      Todos
+    </button>
+
+    <button data-marca="toyota">
+      Toyota
+    </button>
+
+    <button data-marca="mazda">
+      Mazda
+    </button>
+
+    <button data-marca="chevrolet">
+      Chevrolet
+    </button>
+
+    <button data-marca="kia">
+      Kia
+    </button>
+
+    <button data-marca="renault">
+      Renault
+    </button>
+
+    <button data-marca="ford">
+      Ford
+    </button>
+
+    <button data-marca="hyundai">
+      Hyundai
+    </button>
+
+  </nav>
+
+  <!-- PRODUCTOS -->
+
+  <main>
+
+    <section class="products" id="products"></section>
+
+  </main>
+
+  <!-- MODAL -->
+
+  <div class="image-modal" id="imageModal">
+
+    <span class="close-modal" id="closeModal">
+      &times;
+    </span>
+
+    <button class="modal-arrow left" id="prevImage">
+      <i class="fa fa-chevron-left"></i>
+    </button>
+
+    <div class="modal-content">
+
+      <img id="modalImage">
+
+      <div class="modal-actions">
+
+        <button id="rotateBtn">
+          <i class="fa fa-rotate"></i>
+          Vista 360
+        </button>
+
+      </div>
+
+    </div>
+
+    <button class="modal-arrow right" id="nextImage">
+      <i class="fa fa-chevron-right"></i>
+    </button>
+
+  </div>
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    <div class="footer-container">
+
+      <div class="footer-box">
+
+        <img src="img/logo.png" class="footer-logo">
+
+        <p>
+          City Stop es una tienda especializada en espejos y accesorios automotrices.
+        </p>
+
+        <p>
+          Productos de calidad y atención personalizada.
+        </p>
+
+      </div>
+
+      <div class="footer-box">
+
+        <h2>Sedes</h2>
+
+        <ul>
+
+          <li>
+            <a href="https://maps.app.goo.gl/zmaXxenWacz6dPPg9"
+            target="_blank">
+
+              📍 7 de Agosto
+
+            </a>
+          </li>
+
+          <li>
+            <a href="https://maps.app.goo.gl/N6RzAWnGbXTPoezz5"
+            target="_blank">
+
+              📍 Centro<br>
+              Carrera 18 #4a-26
+
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+      <div class="footer-box">
+
+        <h2>Redes Sociales</h2>
+
+        <div class="social-icons">
+
+          <a href="https://www.tiktok.com/@citystopgo20?_r=1&_t=ZS-96V37abes5t"
+          target="_blank">
+
+            <i class="fab fa-tiktok"></i>
+
+          </a>
+
+          <a href="https://wa.me/573059117424"
+          target="_blank">
+
+            <i class="fab fa-whatsapp"></i>
+
+          </a>
+
+        </div>
+
+      </div>
+
+      <div class="footer-box">
+
+        <h2>Contáctanos</h2>
+
+        <p>📞 +57 305 9117424</p>
+        <p>📍 Bogotá, Colombia</p>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+  <!-- WHATSAPP -->
+
+  <a href="https://wa.me/573059117424"
+  class="floating-whatsapp"
+  target="_blank">
+
+    <i class="fab fa-whatsapp"></i>
+
+  </a>
+
+  <!-- FIREBASE -->
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-config.js"></script>
+
+  <!-- SCRIPT -->
+
+  <script src="script.js"></script>
+
+</body>
+</html>

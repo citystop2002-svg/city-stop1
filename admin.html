@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin City Stop</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+  <div class="login" id="loginBox">
+    <h1>Admin City Stop</h1>
+
+    <input type="email" id="email" placeholder="Correo">
+    <input type="password" id="password" placeholder="Contraseña">
+
+    <button id="loginBtn">Ingresar</button>
+  </div>
+
+  <div class="panel" id="adminPanel">
+
+    <div class="panel-header">
+      <h1>Panel Administrador</h1>
+      <button id="logoutBtn">Cerrar sesión</button>
+    </div>
+
+    <div class="top-buttons">
+      <button id="showFormBtn">➕ Agregar producto</button>
+      <button id="importBtn">🚀 Importar productos actuales</button>
+    </div>
+
+    <form id="productForm">
+
+      <input type="hidden" id="productId">
+
+      <input id="codigo" placeholder="Código ejemplo: producto1">
+
+      <input id="nombre" placeholder="Nombre producto">
+
+      <input id="precio" placeholder="Precio">
+
+      <input id="marca" placeholder="Marca">
+
+      <textarea id="descripcion" placeholder="Descripción"></textarea>
+
+      <select id="stock">
+        <option>Disponible</option>
+        <option>Pocas Unidades</option>
+        <option>Agotado</option>
+        <option>Últimas piezas</option>
+      </select>
+
+      <button type="submit">Guardar producto</button>
+
+    </form>
+
+    <div id="productList"></div>
+
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <script src="firebase-config.js"></script>
+  <script src="productos.js"></script>
+  <script src="admin.js"></script>
+
+</body>
+</html>
