@@ -30,6 +30,33 @@
       <button id="importBtn">🚀 Importar productos actuales</button>
     </div>
 
+    <div class="admin-filters">
+
+      <input
+      type="text"
+      id="adminSearch"
+      placeholder="Buscar por nombre, código o marca...">
+
+      <select id="brandFilter">
+        <option value="todos">Todas las marcas</option>
+        <option value="toyota">Toyota</option>
+        <option value="mazda">Mazda</option>
+        <option value="chevrolet">Chevrolet</option>
+        <option value="kia">Kia</option>
+        <option value="renault">Renault</option>
+        <option value="ford">Ford</option>
+        <option value="hyundai">Hyundai</option>
+        <option value="mercedes">Mercedes</option>
+      </select>
+
+      <button id="clearFiltersBtn">Limpiar filtros</button>
+
+    </div>
+
+    <p class="admin-counter" id="adminCounter">
+      Productos: 0
+    </p>
+
     <form id="productForm">
 
       <input type="hidden" id="productId">
@@ -40,7 +67,7 @@
 
       <input id="precio" placeholder="Precio">
 
-      <input id="marca" placeholder="Marca">
+      <input id="marca" placeholder="Marca ejemplo: ford">
 
       <textarea id="descripcion" placeholder="Descripción"></textarea>
 
