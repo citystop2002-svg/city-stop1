@@ -125,6 +125,52 @@ header{
 body.dark header{
   background:#1b1b1b;
 }
+/* HORARIOS HEADER */
+
+.header-info{
+  display:flex;
+
+  gap:30px;
+
+  align-items:center;
+}
+
+.schedule-box{
+  background:white;
+
+  border-left:4px solid red;
+
+  padding:8px 14px;
+
+  box-shadow:
+  0 2px 8px rgba(0,0,0,.06);
+
+  border-radius:8px;
+}
+
+.schedule-box h3{
+  font-size:14px;
+
+  color:red;
+
+  margin-bottom:6px;
+}
+
+.schedule-box p{
+  font-size:11px;
+
+  line-height:17px;
+
+  color:#333;
+}
+
+body.dark .schedule-box{
+  background:#1f1f1f;
+}
+
+body.dark .schedule-box p{
+  color:#ddd;
+}
 
 /* LOGO HEADER */
 
