@@ -86,7 +86,7 @@ body.dark{
 .marquee{
   display:flex;
   width:max-content;
-  animation:mover 15s linear infinite;
+  animation:mover 28s linear infinite;
 }
 
 .marquee span{
@@ -95,13 +95,18 @@ body.dark{
   font-weight:bold;
   letter-spacing:2px;
   text-transform:uppercase;
-  padding-left:100%;
+  padding-left:0;
+  padding-right:60px;
+}
+
+.marquee span::after{
+  content:" 🚗 CITY STOP • ESPEJOS • ACCESORIOS • BOGOTÁ • CITY STOP 🚗 CITY STOP • ESPEJOS • ACCESORIOS • BOGOTÁ • CITY STOP 🚗";
 }
 
 @keyframes mover{
 
   0%{
-    transform:translateX(0);
+    transform:translateX(100vw);
   }
 
   100%{
