@@ -125,7 +125,7 @@ header{
 
   gap:10px;
 
-  min-height:10px;
+
 }
 
 body.dark header{
@@ -135,8 +135,12 @@ body.dark header{
 /* LOGO HEADER */
 
 .logo img{
-  width:300px;
+  width:260px;
+
+  max-height:70px;
+
   object-fit:contain;
+
   transition:0.3s;
 }
 
