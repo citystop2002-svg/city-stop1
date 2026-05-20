@@ -121,11 +121,11 @@ header{
 
   align-items:center;
 
-  padding:25px 3%;
+  padding:12px 3%;
 
-  gap:20px;
+  gap:15px;
 
-  min-height:100px;
+  min-height:70px;
 }
 
 body.dark header{
