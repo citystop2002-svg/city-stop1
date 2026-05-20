@@ -85,28 +85,32 @@ body.dark{
 
 .marquee{
   display:flex;
+
   width:max-content;
-  animation:mover 28s linear infinite;
+
+  animation:mover 25s linear infinite;
 }
 
 .marquee span{
   color:white;
-  font-size:14px;
-  font-weight:bold;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  padding-left:0;
-  padding-right:60px;
-}
 
-.marquee span::after{
-  content:" 🚗 CITY STOP • ESPEJOS • ACCESORIOS • BOGOTÁ • CITY STOP 🚗 CITY STOP • ESPEJOS • ACCESORIOS • BOGOTÁ • CITY STOP 🚗";
+  font-size:14px;
+
+  font-weight:bold;
+
+  letter-spacing:2px;
+
+  text-transform:uppercase;
+
+  white-space:nowrap;
+
+  padding-right:80px;
 }
 
 @keyframes mover{
 
   0%{
-    transform:translateX(100vw);
+    transform:translateX(100%);
   }
 
   100%{
@@ -114,7 +118,6 @@ body.dark{
   }
 
 }
-
 /* HEADER */
 
 header{
