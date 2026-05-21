@@ -59,6 +59,7 @@ Quiero este espejo:
         <img src="img/logo.png" class="card-logo">
 
         <span class="stock">${producto.stock || "Disponible"}</span>
+        ${producto.descuento ? `<span class="discount">${producto.descuento}</span>` : ""}
 
         <div class="image-container" onclick="abrirModal(${index})">
           <img class="main-image" src="${imagenPrincipal}">
