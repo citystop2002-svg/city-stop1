@@ -108,6 +108,7 @@ productForm.addEventListener("submit", async e => {
     cantidadIzquierdo: document.getElementById("cantidadIzquierdo").value || "0",
     cantidadDerecho: document.getElementById("cantidadDerecho").value || "0",
     descuento: document.getElementById("descuento").value.trim()
+    
   };
 
   try{
@@ -266,7 +267,17 @@ function mostrarProductosAdmin(lista){
             <small>Marca: ${p.marca || "sin marca"}</small>
 
             <small>Código: ${p.codigo || "sin código"}</small>
-            <small>Cantidad: Izquierdo: ${p.cantidadIzquierdo || 0} | Derecho: ${p.cantidadDerecho || 0}</small>
+            <small>
+  Cantidad:
+  Izquierdo: ${p.cantidadIzquierdo || 0} |
+  Derecho: ${p.cantidadDerecho || 0} |
+  Total:
+  ${
+    (parseInt(p.cantidadIzquierdo || 0)) +
+    (parseInt(p.cantidadDerecho || 0))
+  }
+</small>
+            
 
           </div>
 
