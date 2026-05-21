@@ -796,12 +796,29 @@ body.dark .product-card small{
 /* FOOTER */
 
 footer{
-  background:red;
+  background:
+  radial-gradient(
+    circle at center,
+    rgba(255,0,0,0.18),
+    transparent 45%
+  ),
+
+  linear-gradient(
+    135deg,
+    #050505 0%,
+    #151515 45%,
+    #7d0000 100%
+  );
+
   color:white;
 
   padding:50px 5%;
 
   margin-top:40px;
+
+  position:relative;
+
+  overflow:hidden;
 }
 
 .footer-container{
@@ -811,6 +828,8 @@ footer{
   repeat(auto-fit,minmax(250px,1fr));
 
   gap:40px;
+   position:relative;
+   z-index:2;
 }
 
 .footer-logo{
