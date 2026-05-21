@@ -104,7 +104,10 @@ productForm.addEventListener("submit", async e => {
     imagen: `img/${codigo}.png`,
     hover: `img/${codigo}-hover.png`,
     descripcion: document.getElementById("descripcion").value.trim(),
-    stock: document.getElementById("stock").value
+    stock: document.getElementById("stock").value,
+    cantidadIzquierdo: document.getElementById("cantidadIzquierdo").value || "0",
+    cantidadDerecho: document.getElementById("cantidadDerecho").value || "0",
+    descuento: document.getElementById("descuento").value.trim()
   };
 
   try{
@@ -258,10 +261,12 @@ function mostrarProductosAdmin(lista){
             <span>💲 ${p.precio || "$0"}</span>
 
             <span>📦 ${p.stock || "Disponible"}</span>
+            
 
             <small>Marca: ${p.marca || "sin marca"}</small>
 
             <small>Código: ${p.codigo || "sin código"}</small>
+            <small>Cantidad: Izquierdo: ${p.cantidadIzquierdo || 0} | Derecho: ${p.cantidadDerecho || 0}</small>
 
           </div>
 
@@ -324,6 +329,10 @@ async function editarProducto(id){
   document.getElementById("marca").value = p.marca || "";
   document.getElementById("descripcion").value = p.descripcion || "";
   document.getElementById("stock").value = p.stock || "Disponible";
+  document.getElementById("cantidadIzquierdo").value = p.cantidadIzquierdo || "";
+  document.getElementById("cantidadDerecho").value = p.cantidadDerecho || "";
+  document.getElementById("descuento").value = p.descuento || "";
+  
 
   window.scrollTo({
     top:0,
