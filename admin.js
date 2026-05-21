@@ -107,6 +107,8 @@ productForm.addEventListener("submit", async e => {
     stock: document.getElementById("stock").value,
     cantidadIzquierdo: document.getElementById("cantidadIzquierdo").value || "0",
     cantidadDerecho: document.getElementById("cantidadDerecho").value || "0",
+    precioCompra: document.getElementById("precioCompra").value || "0",
+    precioVenta: document.getElementById("precioVenta").value || "0",
     descuento: document.getElementById("descuento").value.trim()
     
   };
@@ -277,6 +279,7 @@ function mostrarProductosAdmin(lista){
     (parseInt(p.cantidadDerecho || 0))
   }
 </small>
+<small>Compra: $${p.precioCompra || 0} | Venta: $${p.precioVenta || 0}</small>
             
 
           </div>
@@ -342,6 +345,8 @@ async function editarProducto(id){
   document.getElementById("stock").value = p.stock || "Disponible";
   document.getElementById("cantidadIzquierdo").value = p.cantidadIzquierdo || "";
   document.getElementById("cantidadDerecho").value = p.cantidadDerecho || "";
+  document.getElementById("precioCompra").value = p.precioCompra || "";
+  document.getElementById("precioVenta").value = p.precioVenta || "";
   document.getElementById("descuento").value = p.descuento || "";
   
 
