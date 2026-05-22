@@ -115,7 +115,7 @@ db.collection("productos").onSnapshot(snapshot => {
 
   if(producto.visible === false) return;
   productosFirebase.push(producto);
-
+});
 });
 
   mostrarProductos(productosFirebase);
