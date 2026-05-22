@@ -101,11 +101,6 @@ function aplicarFiltros(){
 db.collection("productos").onSnapshot(snapshot => {
   productosFirebase = [];
 
-  snapshot.forEach(doc => {
-    productosFirebase.push({
-      id: doc.id,
-      ...doc.data()
-    });
     snapshot.forEach(doc => {
 
   const producto = {
