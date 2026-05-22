@@ -107,7 +107,7 @@ db.collection("productos").onSnapshot(snapshot => {
     id: doc.id,
     ...doc.data()
   };
-        if(producto.visible === false){
+       if(producto.visible === false || producto.visible === "false"){
     return;
   }
 
