@@ -102,6 +102,7 @@ db.collection("productos").onSnapshot(snapshot => {
   productosFirebase = [];
 
   snapshot.forEach(doc => {
+    if(producto.visible === false) return;
     productosFirebase.push({
       id: doc.id,
       ...doc.data()
