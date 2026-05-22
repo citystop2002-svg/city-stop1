@@ -112,10 +112,7 @@ db.collection("productos").onSnapshot(snapshot => {
     id: doc.id,
     ...doc.data()
   };
-
-  if(producto.visible === false) return;
   productosFirebase.push(producto);
-});
 });
 
   mostrarProductos(productosFirebase);
