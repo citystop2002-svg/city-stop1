@@ -107,7 +107,7 @@ db.collection("productos").onSnapshot(snapshot => {
       ...doc.data()
     });
   });
-
+ if(producto.visible === false) return;
   mostrarProductos(productosFirebase);
 });
 
