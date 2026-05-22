@@ -288,28 +288,25 @@ function mostrarProductosAdmin(lista){
 
         <div class="actions">
 
-          <button onclick="editarProducto('${doc.id}')">
-  Editar
-</button>
+  <button onclick="editarProducto('${p.id}')">
+    Editar
+  </button>
 
-<button onclick="toggleVisible(
-'${doc.id}',
-${p.visible === false}
-)">
-  ${
-    p.visible === false
-    ? "Subir al sitio"
-    : "Remover del sitio"
-  }
-</button>
+  <button onclick="toggleVisible('${p.id}', ${p.visible === false})">
+    ${
+      p.visible === false
+      ? "Subir al sitio"
+      : "Remover del sitio"
+    }
+  </button>
 
-<button onclick="eliminarProducto('${doc.id}')">
-  Eliminar
-</button>
-          </button>
+  <button
+  class="delete-btn"
+  onclick="eliminarProducto('${p.id}')">
+    Eliminar
+  </button>
 
-        </div>
-
+      </div>
       </div>
 
     `;
