@@ -38,6 +38,11 @@ function mostrarProductos(lista){
   lista.forEach((producto, index) => {
     const imagenPrincipal = producto.imagen || "img/sin-imagen.png";
     const imagenHover = producto.hover || producto.imagen || "img/sin-imagen.png";
+    const marca = producto.marca || "";
+    const lado = producto.lado || "";
+    const ladoClase = lado.toLowerCase().includes("ambos") ? " side-badge-both" : "";
+    const modelo = producto.modelo ? `Modelo ${producto.modelo}` : "";
+    const detalles = [modelo, producto.tipo, producto.detalle].filter(Boolean);
 
     const mensaje = `
 Hola City Stop 🚗
@@ -45,6 +50,10 @@ Hola City Stop 🚗
 Quiero este espejo:
 
 📌 Producto: ${producto.nombre || ""}
+🚘 Marca: ${marca || ""}
+↔️ Lado: ${lado || ""}
+📅 Modelo: ${producto.modelo || ""}
+⚙️ Tipo: ${producto.tipo || ""}
 🆔 Código: ${producto.codigo || ""}
 💲 Precio: ${producto.precio || ""}
 📦 Estado: ${producto.stock || ""}
@@ -58,7 +67,11 @@ Quiero este espejo:
       <div class="product-card">
         <img src="img/logo.png" class="card-logo">
 
-        <span class="stock">${producto.stock || "Disponible"}</span>
+        <div class="product-badges">
+          <span class="stock">${producto.stock || "Disponible"}</span>
+          ${lado ? `<span class="side-badge${ladoClase}">${lado}</span>` : ""}
+        </div>
+
         ${producto.descuento ? `<span class="discount">${producto.descuento}</span>` : ""}
 
         <div class="image-container" onclick="abrirModal(${index})">
@@ -66,12 +79,22 @@ Quiero este espejo:
           <img class="hover-image" src="${imagenHover}">
         </div>
 
+        ${marca ? `<div class="brand-line">${marca}</div>` : ""}
         <h3>${producto.nombre || "Sin nombre"}</h3>
+
+        ${
+          detalles.length
+          ? `<div class="product-meta">
+              ${detalles.map(item => `<span>${item}</span>`).join("")}
+            </div>`
+          : ""
+        }
+
         <p>${producto.precio || "$0"}</p>
         <small>${producto.descripcion || ""}</small>
 
         <a class="btn-whatsapp" href="${whatsappURL}" target="_blank">
-          Comprar
+          Consultar
         </a>
       </div>
     `;
@@ -86,7 +109,11 @@ function aplicarFiltros(){
       (producto.nombre || "").toLowerCase().includes(texto) ||
       (producto.descripcion || "").toLowerCase().includes(texto) ||
       (producto.codigo || "").toLowerCase().includes(texto) ||
-      (producto.marca || "").toLowerCase().includes(texto);
+      (producto.marca || "").toLowerCase().includes(texto) ||
+      (producto.lado || "").toLowerCase().includes(texto) ||
+      (producto.modelo || "").toLowerCase().includes(texto) ||
+      (producto.tipo || "").toLowerCase().includes(texto) ||
+      (producto.detalle || "").toLowerCase().includes(texto);
 
     const coincideMarca =
       marcaActiva === "todos" ||
