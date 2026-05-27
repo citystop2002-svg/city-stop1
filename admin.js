@@ -96,24 +96,31 @@ productForm.addEventListener("submit", async e => {
 
   const codigo = document.getElementById("codigo").value.trim().toLowerCase();
 
-  const producto = {
-    codigo: codigo,
-    nombre: document.getElementById("nombre").value.trim(),
-    precio: document.getElementById("precio").value.trim(),
-    marca: document.getElementById("marca").value.trim().toLowerCase(),
-    imagen: `img/${codigo}.png`,
-    hover: `img/${codigo}-hover.png`,
-    descripcion: document.getElementById("descripcion").value.trim(),
-    stock: document.getElementById("stock").value,
-    cantidadIzquierdo: document.getElementById("cantidadIzquierdo").value || "0",
-    cantidadDerecho: document.getElementById("cantidadDerecho").value || "0",
-    precioCompra: document.getElementById("precioCompra").value || "0",
-    precioVenta: document.getElementById("precioVenta").value || "0",
-    descuento: document.getElementById("descuento").value.trim()
-    
-  };
+  if(!codigo){
+    alert("Escribe un código para el producto.");
+    return;
+  }
 
   try{
+    const producto = {
+      codigo: codigo,
+      nombre: document.getElementById("nombre").value.trim(),
+      precio: document.getElementById("precio").value.trim(),
+      marca: document.getElementById("marca").value.trim().toLowerCase(),
+      imagen: `img/${codigo}.png`,
+      hover: `img/${codigo}-hover.png`,
+      descripcion: document.getElementById("descripcion").value.trim(),
+      stock: document.getElementById("stock").value,
+      lado: document.getElementById("lado").value,
+      modelo: document.getElementById("modelo").value.trim(),
+      tipo: document.getElementById("tipo").value,
+      detalle: document.getElementById("detalle").value.trim(),
+      cantidadIzquierdo: document.getElementById("cantidadIzquierdo").value || "0",
+      cantidadDerecho: document.getElementById("cantidadDerecho").value || "0",
+      precioCompra: document.getElementById("precioCompra").value || "0",
+      precioVenta: document.getElementById("precioVenta").value || "0",
+      descuento: document.getElementById("descuento").value.trim()
+    };
 
     if(id){
       await db.collection("productos").doc(id).update(producto);
@@ -205,6 +212,10 @@ function aplicarFiltrosAdmin(){
     const codigo = normalizar(producto.codigo);
     const marca = normalizar(producto.marca);
     const descripcion = normalizar(producto.descripcion);
+    const lado = normalizar(producto.lado);
+    const modelo = normalizar(producto.modelo);
+    const tipo = normalizar(producto.tipo);
+    const detalle = normalizar(producto.detalle);
     const stock = normalizar(producto.stock);
 
     const coincideTexto =
@@ -212,7 +223,11 @@ function aplicarFiltrosAdmin(){
       nombre.includes(texto) ||
       codigo.includes(texto) ||
       marca.includes(texto) ||
-      descripcion.includes(texto);
+      descripcion.includes(texto) ||
+      lado.includes(texto) ||
+      modelo.includes(texto) ||
+      tipo.includes(texto) ||
+      detalle.includes(texto);
 
     const coincideMarca =
       marcaSeleccionada === "todos" ||
@@ -269,6 +284,8 @@ function mostrarProductosAdmin(lista){
             <small>Marca: ${p.marca || "sin marca"}</small>
 
             <small>Código: ${p.codigo || "sin código"}</small>
+            <small>Lado: ${p.lado || "sin lado"} | Modelo: ${p.modelo || "sin modelo"}</small>
+            <small>Tipo: ${p.tipo || "sin tipo"} | Detalle: ${p.detalle || "sin detalle"}</small>
             <small>
   Cantidad:
   Izquierdo: ${p.cantidadIzquierdo || 0} |
@@ -348,6 +365,10 @@ async function editarProducto(id){
   document.getElementById("nombre").value = p.nombre || "";
   document.getElementById("precio").value = p.precio || "";
   document.getElementById("marca").value = p.marca || "";
+  document.getElementById("lado").value = p.lado || "";
+  document.getElementById("modelo").value = p.modelo || "";
+  document.getElementById("tipo").value = p.tipo || "";
+  document.getElementById("detalle").value = p.detalle || "";
   document.getElementById("descripcion").value = p.descripcion || "";
   document.getElementById("stock").value = p.stock || "Disponible";
   document.getElementById("cantidadIzquierdo").value = p.cantidadIzquierdo || "";
