@@ -483,21 +483,40 @@ body.dark .product-card{
 
 /* STOCK */
 
-.stock{
+.product-badges{
   position:absolute;
   top:10px;
   left:10px;
+  right:62px;
+  z-index:5;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
 
+.stock{
   background:red;
   color:white;
-
   font-size:10px;
-
-  padding:5px 10px;
-
+  font-weight:bold;
+  padding:5px 9px;
   border-radius:20px;
+  line-height:1;
+}
 
-  z-index:5;
+.side-badge{
+  background:black;
+  color:white;
+  font-size:10px;
+  font-weight:bold;
+  padding:5px 9px;
+  border-radius:20px;
+  line-height:1;
+}
+
+.side-badge-both{
+  outline:2px solid red;
+  outline-offset:0;
 }
 .discount{
   position:absolute;
@@ -588,21 +607,55 @@ body.dark .product-card{
 
 /* TEXTO */
 
-.product-card h3{
+.brand-line{
+  color:red;
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
   margin-top:10px;
+  letter-spacing:.4px;
+}
 
-  font-size:17px;
-  line-height:24px;
+.product-card h3{
+  margin-top:5px;
+
+  font-size:14px;
+  line-height:18px;
 
   color:#111;
 
-  height:50px;
+  min-height:36px;
 
   overflow:hidden;
 }
 
 body.dark .product-card h3{
   color:white;
+}
+
+.product-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-top:8px;
+  min-height:50px;
+}
+
+.product-meta span{
+  background:#f4f4f4;
+  color:#444;
+  border:1px solid #e6e6e6;
+  border-radius:20px;
+  padding:5px 8px;
+  font-size:10px;
+  font-weight:bold;
+  line-height:1;
+}
+
+body.dark .product-meta span{
+  background:#2b2b2b;
+  color:#ddd;
+  border-color:#3a3a3a;
 }
 
 .product-card p{
