@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0b0b0b"/>
+  <path d="M16 36c-2-13 5-24 19-25 11-.8 19 5 20 15 .8 9-5 17-16 19-11 2-20-1-23-9Z" fill="#181818" stroke="#e00012" stroke-width="5"/>
+  <path d="M13 38c-5 2-8 5-9 10" fill="none" stroke="#e00012" stroke-width="5" stroke-linecap="round"/>
+  <path d="M23 20c7-5 18-4 24 1" fill="none" stroke="#ffffff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
+  <text x="34" y="37" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="18" font-weight="900" fill="#ffffff">CS</text>
+</svg>
