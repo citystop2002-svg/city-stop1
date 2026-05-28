@@ -3,180 +3,274 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin City Stop</title>
-  <link rel="stylesheet" href="admin.css">
+  <title>City Stop</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
 
-  <div class="login" id="loginBox">
-    <h1>Admin City Stop</h1>
-
-    <input type="email" id="email" placeholder="Correo">
-    <input type="password" id="password" placeholder="Contraseña">
-
-    <button id="loginBtn">Ingresar</button>
+  <!-- LOADER -->
+ 
+    <img src="img/logo.png">
+    <p>Cargando catálogo...</p>
   </div>
 
-  <div class="panel" id="adminPanel">
+  <!-- LOGO FLOTANTE -->
 
-    <div class="panel-header">
-      <h1>Panel Administrador</h1>
-      <button id="logoutBtn">Cerrar sesión</button>
+  <img src="img/logo.png" class="watermark-logo">
+
+  <!-- BARRA SUPERIOR -->
+
+  <div class="top-bar">
+    <div class="marquee">
+      <span>
+        🚗 CITY STOP • ESPEJOS • ACCESORIOS • BOGOTÁ • CITY STOP 🚗
+      </span>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+
+  <header>
+
+    <div class="logo">
+      <img src="img/logo.png">
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h3>Total</h3>
-        <p id="totalCount">0</p>
-      </div>
+    <div class="search-box">
+      <input type="text"
+      id="searchInput"
+      placeholder="Buscar espejo...">
 
-      <div class="stat-card">
-        <h3>Disponibles</h3>
-        <p id="availableCount">0</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Agotados</h3>
-        <p id="soldOutCount">0</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Pocas unidades</h3>
-        <p id="lowCount">0</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Últimas piezas</h3>
-        <p id="lastCount">0</p>
-      </div>
+      <button>
+        <i class="fa fa-search"></i>
+      </button>
     </div>
 
-    <div class="top-buttons">
-      <button id="showFormBtn">➕ Agregar producto</button>
-      <button id="importBtn">🚀 Importar productos actuales</button>
+    <button class="dark-btn" id="darkModeBtn">
+      <i class="fa fa-moon"></i>
+    </button>
+
+  </header>
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <img src="img/logo.png" class="hero-logo">
+
+      <h1>
+        CATÁLOGO DE ESPEJOS PARA CARRO
+      </h1>
+
+      <p>
+        Encuentra espejos, accesorios automotrices y atención directa por WhatsApp.
+      </p>
+
+      <div class="hero-subtext">
+        🚗 Lo mejor para tu carro 🚗
+      </div>
+
+      <a href="#products">
+        Ver catálogo
+      </a>
+
     </div>
 
-    <form id="productForm">
+  </section>
 
-      <input type="hidden" id="productId">
+  <!-- FILTROS -->
 
-      <input id="codigo" placeholder="Código ejemplo: producto1">
+  <nav class="brand-filters">
 
-      <input id="nombre" placeholder="Nombre producto">
+    <button data-marca="todos" class="active">
+      Todos
+    </button>
 
-      <input id="precio" placeholder="Precio">
+    <button data-marca="toyota">
+      Toyota
+    </button>
 
-      <input id="marca" placeholder="Marca ejemplo: ford">
+    <button data-marca="mazda">
+      Mazda
+    </button>
 
-      <div class="quantity-row">
-        <select id="lado">
-          <option value="">Lado del espejo</option>
-          <option>Izquierdo</option>
-          <option>Derecho</option>
-          <option>Ambos lados</option>
-        </select>
+    <button data-marca="chevrolet">
+      Chevrolet
+    </button>
 
-        <input id="modelo" placeholder="Modelo ejemplo: 2017-2019">
-      </div>
+    <button data-marca="kia">
+      Kia
+    </button>
 
-      <div class="quantity-row">
-        <select id="tipo">
-          <option value="">Tipo</option>
-          <option>Eléctrico</option>
-          <option>Manual</option>
-        </select>
+    <button data-marca="renault">
+      Renault
+    </button>
 
-        <input id="detalle" placeholder="Detalle ejemplo: Con direccional">
-      </div>
+    <button data-marca="ford">
+      Ford
+    </button>
 
-      <div class="quantity-row">
-      <input id="cantidadIzquierdo" type="number" min="0" placeholder="Cantidad izquierdo">
-      <input id="cantidadDerecho" type="number" min="0" placeholder="Cantidad derecho">
-      </div>
-      <div class="quantity-row">
-      <input id="precioCompra" type="number" min="0" placeholder="Precio compra">
-      <input id="precioVenta" type="number" min="0" placeholder="Precio venta">
-      </div>
-      <input id="descuento" placeholder="Descuento visible ejemplo: 10% OFF">
+    <button data-marca="hyundai">
+      Hyundai
+    </button>
 
-      <textarea id="descripcion" placeholder="Descripción"></textarea>
+  </nav>
 
-      <select id="stock">
-        <option>Disponible</option>
-        <option>Pocas Unidades</option>
-        <option>Agotado</option>
-        <option>Últimas piezas</option>
-      </select>
+  <!-- PRODUCTOS -->
 
-      <button type="submit">Guardar producto</button>
+  <main>
 
-    </form>
+    <section class="products" id="products"></section>
 
-    <div class="admin-layout">
+  </main>
 
-      <aside class="admin-sidebar">
+  <!-- MODAL -->
 
-        <h2>BUSCAR</h2>
+  <div class="image-modal" id="imageModal">
 
-        <input
-        type="text"
-        id="adminSearch"
-        placeholder="Nombre, código o marca...">
+    <span class="close-modal" id="closeModal">
+      &times;
+    </span>
 
-        <h2>MARCAS</h2>
+    <button class="modal-arrow left" id="prevImage">
+      <i class="fa fa-chevron-left"></i>
+    </button>
 
-        <select id="brandFilter">
-          <option value="todos">Todas las marcas</option>
-          <option value="toyota">Toyota</option>
-          <option value="mazda">Mazda</option>
-          <option value="chevrolet">Chevrolet</option>
-          <option value="kia">Kia</option>
-          <option value="renault">Renault</option>
-          <option value="ford">Ford</option>
-          <option value="hyundai">Hyundai</option>
-          <option value="mercedes">Mercedes</option>
-        </select>
+    <div class="modal-content">
 
-        <h2>ESTADO</h2>
+      <img id="modalImage">
 
-        <select id="stockFilter">
-          <option value="todos">Todos</option>
-          <option value="disponible">Disponible</option>
-          <option value="pocas unidades">Pocas unidades</option>
-          <option value="agotado">Agotado</option>
-          <option value="últimas piezas">Últimas piezas</option>
-        </select>
+      <div class="modal-actions">
 
-        <button id="clearFiltersBtn" class="clear-btn">
-          Limpiar filtros
+        <button id="rotateBtn">
+          <i class="fa fa-rotate"></i>
+          Vista 360
         </button>
 
-      </aside>
-
-      <section class="admin-products">
-
-        <div class="results-header">
-          <h2>Productos</h2>
-          <span id="adminCounter">0 encontrados</span>
-        </div>
-
-        <div id="productList"></div>
-
-      </section>
+      </div>
 
     </div>
 
+    <button class="modal-arrow right" id="nextImage">
+      <i class="fa fa-chevron-right"></i>
+    </button>
+
   </div>
 
+  <!-- FOOTER -->
+
+  <footer>
+
+    <div class="footer-container">
+
+      <div class="footer-box">
+
+        <img src="img/logo.png" class="footer-logo">
+
+        <p>
+          City Stop es una tienda especializada en espejos y accesorios automotrices.
+        </p>
+
+        <p>
+          Productos de calidad y atención personalizada.
+        </p>
+
+      </div>
+
+      <div class="footer-box">
+
+        <h2>Sedes</h2>
+
+        <ul>
+
+          <li>
+            <a href="https://maps.app.goo.gl/zmaXxenWacz6dPPg9"
+            target="_blank">
+
+              📍 7 de Agosto
+
+            </a>
+          </li>
+
+          <li>
+            <a href="https://maps.app.goo.gl/N6RzAWnGbXTPoezz5"
+            target="_blank">
+
+              📍 Centro<br>
+              Carrera 18 #4a-26
+
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+      <div class="footer-box">
+
+        <h2>Redes Sociales</h2>
+
+        <div class="social-icons">
+
+          <a href="https://www.tiktok.com/@citystopgo20?_r=1&_t=ZS-96V37abes5t"
+          target="_blank">
+
+            <i class="fab fa-tiktok"></i>
+
+          </a>
+
+          <a href="https://wa.me/573059117424"
+          target="_blank">
+
+            <i class="fab fa-whatsapp"></i>
+
+          </a>
+
+        </div>
+
+      </div>
+
+      <div class="footer-box">
+
+        <h2>Contáctanos</h2>
+
+        <p>📞 +57 305 9117424</p>
+        <p>📍 Bogotá, Colombia</p>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+  <!-- WHATSAPP -->
+
+  <a href="https://wa.me/573059117424"
+  class="floating-whatsapp"
+  target="_blank">
+
+    <i class="fab fa-whatsapp"></i>
+
+  </a>
+
+  <!-- FIREBASE -->
+
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
   <script src="firebase-config.js"></script>
-  <script src="productos.js"></script>
-  <script src="admin.js"></script>
+
+  <!-- SCRIPT -->
+
+  <script src="script.js"></script>
 
 </body>
 </html>
-
