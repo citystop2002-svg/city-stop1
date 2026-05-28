@@ -45,19 +45,19 @@ function mostrarProductos(lista){
     const detalles = [modelo, producto.tipo, producto.detalle].filter(Boolean);
 
     const mensaje = `
-Hola City Stop 🚗
+Hola City Stop
 
-Quiero este espejo:
+Quiero consultar este espejo:
 
-📌 Producto: ${producto.nombre || ""}
-🚘 Marca: ${marca || ""}
-↔️ Lado: ${lado || ""}
-📅 Modelo: ${producto.modelo || ""}
-⚙️ Tipo: ${producto.tipo || ""}
-🆔 Código: ${producto.codigo || ""}
-💲 Precio: ${producto.precio || ""}
-📦 Estado: ${producto.stock || ""}
-📝 Descripción: ${producto.descripcion || ""}
+Producto: ${producto.nombre || ""}
+Marca: ${marca || ""}
+Lado: ${lado || ""}
+Modelo: ${producto.modelo || ""}
+Tipo: ${producto.tipo || ""}
+Codigo: ${producto.codigo || ""}
+Precio: ${producto.precio || ""}
+Estado: ${producto.stock || ""}
+Descripcion: ${producto.descripcion || ""}
 `;
 
     const whatsappURL =
