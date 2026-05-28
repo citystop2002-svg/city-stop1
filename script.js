@@ -1,3 +1,17 @@
+function ocultarLoader(){
+  const loaderElement = document.getElementById("loader");
+
+  if(loaderElement){
+    loaderElement.style.display = "none";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(ocultarLoader, 1200);
+});
+
+setTimeout(ocultarLoader, 3500);
+
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
@@ -21,9 +35,7 @@ let modalIndex = 0;
 let marcaActiva = "todos";
 
 window.addEventListener("load", () => {
-  setTimeout(() => {
-    loader.style.display = "none";
-  }, 1200);
+  setTimeout(ocultarLoader, 1200);
 });
 
 function mostrarProductos(lista){
@@ -142,6 +154,14 @@ db.collection("productos").onSnapshot(snapshot => {
 });
 
   mostrarProductos(productosFirebase);
+}, error => {
+  console.error(error);
+  ocultarLoader();
+  container.innerHTML = `
+    <p class="no-results">
+      No fue posible cargar el catálogo. Intenta actualizar la página.
+    </p>
+  `;
 });
 
 buscador.addEventListener("keyup", aplicarFiltros);
