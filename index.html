@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>City Stop</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20260528">
 
   <link rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,7 +14,8 @@
 <body>
 
   <!-- LOADER -->
- 
+
+  <div class="loader" id="loader">
     <img src="img/logo.png">
     <p>Cargando catálogo...</p>
   </div>
@@ -28,34 +29,40 @@
   <div class="top-bar">
     <div class="marquee">
       <span>
-        🚗 CITY STOP • ESPEJOS • ACCESORIOS • BOGOTÁ • CITY STOP 🚗
+        CITY STOP • ESPEJOS • ACCESORIOS • BOGOTÁ • CITY STOP • ENVIOS A TODO COLOMBIA
       </span>
     </div>
   </div>
 
   <!-- HEADER -->
 
-  <header>
+<header>
 
-    <div class="logo">
-      <img src="img/logo.png">
+  <div class="logo">
+    <div class="mirror-wordmark" aria-label="City Stop">
+      <span class="word-part">C</span><span class="signal-i"></span><span class="word-part">TY</span>
+      <span class="word-part red">STO</span><span class="mirror-p"><span class="mirror-arm"></span></span>
     </div>
+  </div>
 
-    <div class="search-box">
-      <input type="text"
-      id="searchInput"
-      placeholder="Buscar espejo...">
+  <div class="search-box">
 
-      <button>
-        <i class="fa fa-search"></i>
-      </button>
-    </div>
+    <input
+    type="text"
+    id="searchInput"
+    placeholder="Buscar espejo...">
 
-    <button class="dark-btn" id="darkModeBtn">
-      <i class="fa fa-moon"></i>
+    <button>
+      <i class="fa fa-search"></i>
     </button>
 
-  </header>
+  </div>
+
+  <button class="dark-btn" id="darkModeBtn">
+    <i class="fa fa-moon"></i>
+  </button>
+
+</header>
 
   <!-- HERO -->
 
@@ -63,7 +70,15 @@
 
     <div class="hero-content">
 
-      <img src="img/logo.png" class="hero-logo">
+      <div class="hero-logo-wrap">
+        <img src="img/logo.png" class="hero-logo">
+        <span class="animated-mirror" aria-hidden="true">
+          <span class="mirror-signal"></span>
+        </span>
+        <span class="animated-mirror animated-mirror-right" aria-hidden="true">
+          <span class="mirror-signal"></span>
+        </span>
+      </div>
 
       <h1>
         CATÁLOGO DE ESPEJOS PARA CARRO
@@ -120,12 +135,24 @@
     <button data-marca="hyundai">
       Hyundai
     </button>
+    
+    <button data-marca="mercedes">
+  Mercedes
+</button>
+     <button data-marca="nissan">
+  Nissan
+</button>
 
   </nav>
 
   <!-- PRODUCTOS -->
 
   <main>
+
+    <div class="catalog-title">
+      <h1>Catálogo de espejos</h1>
+      <p>Busca por marca, modelo o lado del espejo.</p>
+    </div>
 
     <section class="products" id="products"></section>
 
@@ -188,28 +215,21 @@
 
         <h2>Sedes</h2>
 
-        <ul>
+        <div class="location-card">
+          <strong>7 de Agosto</strong>
+          <span>Calle 63g #28a83</span>
+          <a href="https://maps.app.goo.gl/zmaXxenWacz6dPPg9" target="_blank">
+            Cómo llegar
+          </a>
+        </div>
 
-          <li>
-            <a href="https://maps.app.goo.gl/zmaXxenWacz6dPPg9"
-            target="_blank">
-
-              📍 7 de Agosto
-
-            </a>
-          </li>
-
-          <li>
-            <a href="https://maps.app.goo.gl/N6RzAWnGbXTPoezz5"
-            target="_blank">
-
-              📍 Centro<br>
-              Carrera 18 #4a-26
-
-            </a>
-          </li>
-
-        </ul>
+        <div class="location-card">
+          <strong>Eduardo Santos</strong>
+          <span>Carrera 18 #4a-26</span>
+          <a href="https://maps.app.goo.gl/N6RzAWnGbXTPoezz5" target="_blank">
+            Cómo llegar
+          </a>
+        </div>
 
       </div>
 
@@ -241,8 +261,20 @@
 
         <h2>Contáctanos</h2>
 
-        <p>📞 +57 305 9117424</p>
-        <p>📍 Bogotá, Colombia</p>
+        <div class="footer-contact-line">
+          <i class="fab fa-whatsapp"></i>
+          <span>+57 305 9117424</span>
+        </div>
+
+        <div class="footer-contact-line">
+          <i class="fa fa-location-dot"></i>
+          <span>Bogotá, Colombia</span>
+        </div>
+
+        <div class="footer-contact-line">
+          <i class="fa fa-car-side"></i>
+          <span>Espejos y accesorios automotrices</span>
+        </div>
 
       </div>
 
@@ -253,10 +285,13 @@
   <!-- WHATSAPP -->
 
   <a href="https://wa.me/573059117424"
-  class="floating-whatsapp"
-  target="_blank">
+  class="floating-whatsapp mirror-whatsapp"
+  target="_blank"
+  aria-label="WhatsApp">
 
-    <i class="fab fa-whatsapp"></i>
+    <span class="mirror-whatsapp-icon">
+      <i class="fab fa-whatsapp"></i>
+    </span>
 
   </a>
 
@@ -270,7 +305,7 @@
 
   <!-- SCRIPT -->
 
-  <script src="script.js"></script>
+  <script src="script.js?v=20260528"></script>
 
 </body>
 </html>
