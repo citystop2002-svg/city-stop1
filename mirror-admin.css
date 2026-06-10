@@ -1,0 +1,277 @@
+.mirror-admin{
+  margin-top:34px;
+  border:1px solid #d6dde7;
+  border-radius:14px;
+  padding:18px;
+  background:#f4f6f8;
+}
+
+.mirror-head{
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  align-items:flex-start;
+  margin-bottom:14px;
+}
+
+.mirror-head h2{
+  color:#182230;
+  margin-bottom:6px;
+}
+
+.mirror-head p{
+  color:#667085;
+  margin:0;
+}
+
+.mirror-location{
+  color:#0f4c5c !important;
+  font-weight:800;
+  margin-bottom:6px !important;
+}
+
+.mirror-actions,
+.mirror-tabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.mirror-admin button{
+  background:#0f4c5c;
+}
+
+.mirror-admin button.delete-row{
+  background:#111;
+  padding:8px 10px;
+}
+
+.mirror-tabs{
+  margin-bottom:14px;
+}
+
+.mirror-tabs button{
+  background:white;
+  color:#0f4c5c;
+  border:1px solid #d6dde7;
+}
+
+.mirror-tabs button.active{
+  background:#0f4c5c;
+  color:white;
+  border-color:#0f4c5c;
+}
+
+.mirror-view{
+  display:none;
+}
+
+.mirror-view.active{
+  display:block;
+}
+
+.mirror-summary{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  margin-bottom:12px;
+}
+
+.mirror-summary span{
+  display:inline-flex;
+  align-items:center;
+  min-height:26px;
+  border-radius:999px;
+  padding:5px 10px;
+  background:#e8f3f5;
+  color:#0f4c5c;
+  font-size:12px;
+  font-weight:800;
+}
+
+.mirror-filters,
+.mirror-form-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(150px,1fr));
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.mirror-form-grid label{
+  color:#344054;
+  font-size:12px;
+  font-weight:800;
+}
+
+.mirror-form-grid input,
+.mirror-form-grid select,
+.mirror-filters input,
+.mirror-filters select{
+  margin-top:6px;
+  margin-bottom:0;
+  background:white;
+}
+
+.mirror-table-wrap{
+  overflow-x:auto;
+  background:white;
+  border:1px solid #d6dde7;
+  border-radius:10px;
+}
+
+.mirror-table-wrap table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+.mirror-table-wrap th,
+.mirror-table-wrap td{
+  padding:10px 12px;
+  border-bottom:1px solid #e5eaf0;
+  text-align:left;
+  vertical-align:middle;
+}
+
+.mirror-table-wrap th{
+  background:#f8fafc;
+  color:#344054;
+  font-size:12px;
+  font-weight:900;
+}
+
+.mirror-table-wrap input{
+  min-width:82px;
+  padding:8px;
+  margin:0;
+}
+
+.mirror-card{
+  background:white;
+  border:1px solid #d6dde7;
+  border-radius:12px;
+  padding:16px;
+}
+
+.mirror-card h3{
+  margin-bottom:14px;
+  color:#182230;
+}
+
+.mirror-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:14px;
+}
+
+.mirror-result{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(130px,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+
+.mirror-result div{
+  border:1px solid #d6dde7;
+  background:#fbfcfe;
+  border-radius:10px;
+  padding:12px;
+}
+
+.mirror-result span{
+  display:block;
+  color:#667085;
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+.mirror-result strong{
+  font-size:18px;
+}
+
+.mirror-chart{
+  display:grid;
+  gap:10px;
+  margin-top:16px;
+}
+
+.mirror-bar-row{
+  display:grid;
+  grid-template-columns:84px 1fr 100px;
+  gap:10px;
+  align-items:center;
+}
+
+.mirror-bar-track{
+  height:26px;
+  border:1px solid #d6dde7;
+  background:#edf2f7;
+  border-radius:6px;
+  overflow:hidden;
+}
+
+.mirror-bar{
+  height:100%;
+  min-width:36px;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  padding-right:8px;
+  color:white;
+  background:linear-gradient(90deg,#0f4c5c,#176b4d);
+  font-size:12px;
+  font-weight:800;
+}
+
+.mirror-status{
+  display:inline-flex;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#eaf7f1;
+  color:#176b4d;
+  font-size:12px;
+  font-weight:800;
+}
+
+.mirror-status.out{
+  background:#fff1f0;
+  color:#b42318;
+}
+
+.mirror-toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:1000;
+  background:#176b4d;
+  color:white;
+  padding:12px 14px;
+  border-radius:8px;
+  opacity:0;
+  transform:translateY(10px);
+  pointer-events:none;
+  transition:.2s ease;
+  font-weight:800;
+}
+
+.mirror-toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.hidden{
+  display:none !important;
+}
+
+@media(max-width:900px){
+  .mirror-head{
+    display:grid;
+  }
+
+  .mirror-filters,
+  .mirror-form-grid,
+  .mirror-result{
+    grid-template-columns:1fr;
+  }
+}
