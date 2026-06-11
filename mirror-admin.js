@@ -8,8 +8,9 @@
   const localPersistence = firebase.auth.Auth && firebase.auth.Auth.Persistence
     ? firebase.auth.Auth.Persistence.LOCAL
     : null;
+  let mirrorAuthPersistenceReady = Promise.resolve();
   if(localPersistence){
-    mirrorAuth.setPersistence(localPersistence).catch(() => {});
+    mirrorAuthPersistenceReady = mirrorAuth.setPersistence(localPersistence).catch(() => {});
   }
   const productCol = mirrorDb.collection("mirror_products");
   const salesCol = mirrorDb.collection("mirror_sales");
@@ -19,6 +20,7 @@
   let mirrorSales = [];
   let unsubProducts = null;
   let unsubSales = null;
+  let listeningMirrorData = false;
 
   const money = new Intl.NumberFormat("es-CO", {
     style: "currency",
@@ -84,6 +86,21 @@
     el.textContent = message;
     el.classList.add("show");
     setTimeout(() => el.classList.remove("show"), 2200);
+  }
+
+  function showMirrorAuthMessage(message){
+    const messageBox = $("mirrorAuthMessage");
+    if(messageBox){
+      messageBox.textContent = message;
+      messageBox.classList.remove("hidden");
+    }
+  }
+
+  function hideMirrorAuthMessage(){
+    const messageBox = $("mirrorAuthMessage");
+    if(messageBox){
+      messageBox.classList.add("hidden");
+    }
   }
 
   function showMirrorView(id){
@@ -676,6 +693,10 @@
   }
 
   function listenMirrorData(){
+    if(listeningMirrorData) return;
+    listeningMirrorData = true;
+    hideMirrorAuthMessage();
+
     if(unsubProducts) unsubProducts();
     if(unsubSales) unsubSales();
 
@@ -683,12 +704,22 @@
       mirrorProducts = [];
       snapshot.forEach(doc => mirrorProducts.push({ id: doc.id, ...doc.data() }));
       renderMirrorInventory();
+      hideMirrorAuthMessage();
+    }, error => {
+      listeningMirrorData = false;
+      renderMirrorInventory();
+      showMirrorAuthMessage(`No se pudo cargar inventario: ${error.message}`);
     });
 
     unsubSales = salesCol.orderBy("createdAt", "desc").limit(100).onSnapshot(snapshot => {
       mirrorSales = [];
       snapshot.forEach(doc => mirrorSales.push({ id: doc.id, ...doc.data() }));
       renderMirrorSales();
+      hideMirrorAuthMessage();
+    }, error => {
+      listeningMirrorData = false;
+      renderMirrorSales();
+      showMirrorAuthMessage(`No se pudieron cargar ventas: ${error.message}`);
     });
   }
 
@@ -738,9 +769,10 @@
     $("mirrorReportDate").addEventListener("input", renderMirrorReports);
 
     if($("mirrorLoginBtn")){
-      $("mirrorLoginBtn").addEventListener("click", () => {
+      $("mirrorLoginBtn").addEventListener("click", async () => {
         const email = $("mirrorEmail").value.trim();
         const password = $("mirrorPassword").value;
+        await mirrorAuthPersistenceReady;
         mirrorAuth.signInWithEmailAndPassword(email, password).catch(error => alert(error.message));
       });
     }
@@ -752,10 +784,6 @@
 
   initMirrorAdmin();
 
-  if(!$("mirrorLoginBox")){
-    listenMirrorData();
-  }
-
   mirrorAuth.onAuthStateChanged(user => {
     if($("mirrorLoginBox") && $("mirrorPagePanel")){
       $("mirrorLoginBox").style.display = user ? "none" : "block";
@@ -763,6 +791,10 @@
     }
     if(user){
       listenMirrorData();
+    }else if(!$("mirrorLoginBox")){
+      renderMirrorInventory();
+      renderMirrorSales();
+      showMirrorAuthMessage("No hay sesión activa. Entra al admin principal y abre Admin espejos desde ese botón para ver los registros guardados.");
     }
   });
 })();

@@ -4,8 +4,9 @@ const auth = firebase.auth();
 const localPersistence = firebase.auth.Auth && firebase.auth.Auth.Persistence
   ? firebase.auth.Auth.Persistence.LOCAL
   : null;
+let authPersistenceReady = Promise.resolve();
 if(localPersistence){
-  auth.setPersistence(localPersistence).catch(() => {});
+  authPersistenceReady = auth.setPersistence(localPersistence).catch(() => {});
 }
 const db = firebase.firestore();
 
@@ -30,10 +31,12 @@ let productosAdmin = [];
 
 /* LOGIN */
 
-document.getElementById("loginBtn").addEventListener("click", () => {
+document.getElementById("loginBtn").addEventListener("click", async () => {
 
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
+
+  await authPersistenceReady;
 
   auth.signInWithEmailAndPassword(email, password)
     .catch(error => alert(error.message));
