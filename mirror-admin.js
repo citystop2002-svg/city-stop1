@@ -748,22 +748,8 @@
 
   initMirrorAdmin();
 
-  let mirrorAuthResolved = false;
-  setTimeout(() => {
-    if(mirrorAuthResolved || !$("mirrorLoginBox") || !$("mirrorPagePanel")) return;
-    if($("mirrorAuthCheck")){
-      $("mirrorAuthCheck").style.display = "none";
-    }
-    $("mirrorLoginBox").style.display = "block";
-    $("mirrorPagePanel").style.display = "none";
-  }, 2500);
-
   mirrorAuth.onAuthStateChanged(user => {
-    mirrorAuthResolved = true;
     if($("mirrorLoginBox") && $("mirrorPagePanel")){
-      if($("mirrorAuthCheck")){
-        $("mirrorAuthCheck").style.display = "none";
-      }
       $("mirrorLoginBox").style.display = user ? "none" : "block";
       $("mirrorPagePanel").style.display = user ? "block" : "none";
     }
