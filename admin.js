@@ -113,6 +113,7 @@ productForm.addEventListener("submit", async e => {
   try{
     const producto = {
       codigo: codigo,
+      codigoReal: document.getElementById("codigoReal").value.trim(),
       nombre: document.getElementById("nombre").value.trim(),
       precio: document.getElementById("precio").value.trim(),
       marca: document.getElementById("marca").value.trim().toLowerCase(),
@@ -219,6 +220,7 @@ function aplicarFiltrosAdmin(){
 
     const nombre = normalizar(producto.nombre);
     const codigo = normalizar(producto.codigo);
+    const codigoReal = normalizar(producto.codigoReal);
     const marca = normalizar(producto.marca);
     const descripcion = normalizar(producto.descripcion);
     const lado = normalizar(producto.lado);
@@ -231,6 +233,7 @@ function aplicarFiltrosAdmin(){
       texto === "" ||
       nombre.includes(texto) ||
       codigo.includes(texto) ||
+      codigoReal.includes(texto) ||
       marca.includes(texto) ||
       descripcion.includes(texto) ||
       lado.includes(texto) ||
@@ -292,7 +295,7 @@ function mostrarProductosAdmin(lista){
 
             <small>Marca: ${p.marca || "sin marca"}</small>
 
-            <small>Código: ${p.codigo || "sin código"}</small>
+            <small>Código: ${p.codigoReal || p.codigo || "sin código"}</small>
             
 
           </div>
@@ -358,6 +361,7 @@ async function editarProducto(id){
 
   document.getElementById("productId").value = id;
   document.getElementById("codigo").value = p.codigo || "";
+  document.getElementById("codigoReal").value = p.codigoReal || "";
   document.getElementById("nombre").value = p.nombre || "";
   document.getElementById("precio").value = p.precio || "";
   document.getElementById("marca").value = p.marca || "";
