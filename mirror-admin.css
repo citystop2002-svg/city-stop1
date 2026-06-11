@@ -180,6 +180,32 @@
   font-weight:900;
 }
 
+.sort-head{
+  width:100%;
+  border:0;
+  background:transparent !important;
+  color:inherit;
+  padding:0;
+  text-align:left;
+  font:inherit;
+  cursor:pointer;
+}
+
+.sort-head::after{
+  content:"";
+  display:inline-block;
+  margin-left:5px;
+  color:#0f4c5c;
+}
+
+.sort-head.active[data-direction="asc"]::after{
+  content:"↑";
+}
+
+.sort-head.active[data-direction="desc"]::after{
+  content:"↓";
+}
+
 .mirror-table-wrap input{
   min-width:82px;
   padding:8px;
