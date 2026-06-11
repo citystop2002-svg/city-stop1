@@ -21,6 +21,8 @@
   let unsubProducts = null;
   let unsubSales = null;
   let listeningMirrorData = false;
+  let currentUnitCost = 0;
+  let currentUnitSale = 0;
 
   const money = new Intl.NumberFormat("es-CO", {
     style: "currency",
@@ -278,14 +280,17 @@
       if($("mirrorSaleCode")) $("mirrorSaleCode").value = "";
       $("mirrorUnitCost").value = "";
       $("mirrorUnitSale").value = "";
+      currentUnitCost = 0;
+      currentUnitSale = 0;
       calculateMirrorSale();
       return;
     }
     if($("mirrorSaleCode")){
       $("mirrorSaleCode").value = product.code || product.id || "";
     }
-    $("mirrorUnitCost").value = n(product.unitCost);
-    $("mirrorUnitSale").value = n(product.unitPrice);
+    currentUnitCost = n(product.unitCost);
+    currentUnitSale = n(product.unitPrice);
+    updateDisplayedSaleUnitValues();
     calculateMirrorSale();
   }
 
@@ -307,6 +312,8 @@
     $("mirrorSaleQty").value = 1;
     $("mirrorUnitCost").value = "";
     $("mirrorUnitSale").value = "";
+    currentUnitCost = 0;
+    currentUnitSale = 0;
     $("mirrorPaymentMethod").value = "Efectivo";
     $("mirrorCardInterest").value = 5;
     $("mirrorCustomer").value = "";
@@ -325,6 +332,24 @@
       qtyInput.readOnly = false;
       qtyInput.title = "";
     }
+    updateDisplayedSaleUnitValues();
+    calculateMirrorSale();
+  }
+
+  function updateDisplayedSaleUnitValues(){
+    const multiplier = isPairSide($("mirrorSaleSide").value) ? 2 : 1;
+    if(currentUnitCost || $("mirrorUnitCost").value !== ""){
+      $("mirrorUnitCost").value = currentUnitCost * multiplier;
+    }
+    if(currentUnitSale || $("mirrorUnitSale").value !== ""){
+      $("mirrorUnitSale").value = currentUnitSale * multiplier;
+    }
+  }
+
+  function syncManualSaleValues(){
+    const multiplier = isPairSide($("mirrorSaleSide").value) ? 2 : 1;
+    currentUnitCost = n($("mirrorUnitCost").value) / multiplier;
+    currentUnitSale = n($("mirrorUnitSale").value) / multiplier;
     calculateMirrorSale();
   }
 
@@ -332,8 +357,8 @@
     const qty = n($("mirrorSaleQty").value);
     const side = $("mirrorSaleSide").value;
     const billableQty = isPairSide(side) ? qty * 2 : qty;
-    const unitCost = n($("mirrorUnitCost").value);
-    const unitSale = n($("mirrorUnitSale").value);
+    const unitCost = currentUnitCost || n($("mirrorUnitCost").value);
+    const unitSale = currentUnitSale || n($("mirrorUnitSale").value);
     const method = $("mirrorPaymentMethod").value;
     const interest = n($("mirrorCardInterest").value);
     const usesCard = method === "Tarjeta crédito";
@@ -342,14 +367,8 @@
     const finalSale = baseSale + cardFee;
     const cost = billableQty * unitCost;
     const profit = finalSale - cost;
-    const isPair = isPairSide(side);
 
     $("mirrorCardInterestWrap").classList.toggle("hidden", !usesCard);
-    if($("mirrorPairTotals")){
-      $("mirrorPairTotals").classList.toggle("hidden", !isPair);
-      $("mirrorPairCostOut").textContent = formatMoney(unitCost * 2);
-      $("mirrorPairSaleOut").textContent = formatMoney(unitSale * 2);
-    }
     $("mirrorCostOut").textContent = formatMoney(cost);
     $("mirrorSaleOut").textContent = formatMoney(finalSale);
     $("mirrorCardFeeOut").textContent = formatMoney(cardFee);
@@ -819,8 +838,11 @@
       $("mirrorSaleCode").addEventListener("change", syncSaleCode);
       $("mirrorSaleCode").addEventListener("blur", syncSaleCode);
     }
-    ["mirrorSaleQty", "mirrorUnitCost", "mirrorUnitSale", "mirrorCardInterest"].forEach(id => {
+    ["mirrorSaleQty", "mirrorCardInterest"].forEach(id => {
       $(id).addEventListener("input", calculateMirrorSale);
+    });
+    ["mirrorUnitCost", "mirrorUnitSale"].forEach(id => {
+      $(id).addEventListener("input", syncManualSaleValues);
     });
     $("mirrorSaleSide").addEventListener("change", syncPairQuantity);
     $("mirrorPaymentMethod").addEventListener("change", calculateMirrorSale);
