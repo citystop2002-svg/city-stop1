@@ -574,7 +574,7 @@
       </div>
     `).join("") : `<div class="mirror-bar-row"><strong>Sin ventas</strong><div class="mirror-bar-track"><div class="mirror-bar" style="width:0">$0</div></div><span>$0</span></div>`;
 
-    $("mirrorReportRows").innerHTML = dayRows.length ? dayRows.map(sale => `
+    $("mirrorReportRows").innerHTML = monthRows.length ? monthRows.map(sale => `
       <tr>
         <td>${sale.date || ""}</td>
         <td>${sale.productName || ""}</td>
@@ -583,7 +583,7 @@
         <td>${formatMoney(sale.profit)}</td>
         <td><button class="delete-row" data-delete-mirror-sale="${sale.id}">Eliminar</button></td>
       </tr>
-    `).join("") : `<tr><td colspan="6">No hay ventas registradas para esta fecha.</td></tr>`;
+    `).join("") : `<tr><td colspan="6">No hay ventas registradas para este mes.</td></tr>`;
 
     document.querySelectorAll("[data-delete-mirror-sale]").forEach(button => {
       button.addEventListener("click", () => deleteMirrorSale(button.dataset.deleteMirrorSale));
