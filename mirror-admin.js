@@ -1,7 +1,12 @@
 (function(){
   const mirrorDb = firebase.firestore();
   const mirrorAuth = firebase.auth();
-  mirrorAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
+  const localPersistence = firebase.auth.Auth && firebase.auth.Auth.Persistence
+    ? firebase.auth.Auth.Persistence.LOCAL
+    : null;
+  if(localPersistence){
+    mirrorAuth.setPersistence(localPersistence).catch(() => {});
+  }
   const productCol = mirrorDb.collection("mirror_products");
   const salesCol = mirrorDb.collection("mirror_sales");
   const movementsCol = mirrorDb.collection("mirror_inventory_movements");
@@ -743,7 +748,18 @@
 
   initMirrorAdmin();
 
+  let mirrorAuthResolved = false;
+  setTimeout(() => {
+    if(mirrorAuthResolved || !$("mirrorLoginBox") || !$("mirrorPagePanel")) return;
+    if($("mirrorAuthCheck")){
+      $("mirrorAuthCheck").style.display = "none";
+    }
+    $("mirrorLoginBox").style.display = "block";
+    $("mirrorPagePanel").style.display = "none";
+  }, 2500);
+
   mirrorAuth.onAuthStateChanged(user => {
+    mirrorAuthResolved = true;
     if($("mirrorLoginBox") && $("mirrorPagePanel")){
       if($("mirrorAuthCheck")){
         $("mirrorAuthCheck").style.display = "none";
