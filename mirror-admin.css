@@ -234,6 +234,17 @@
   color:#182230;
 }
 
+.mirror-report-search{
+  margin:-4px 0 12px;
+}
+
+.mirror-report-search input{
+  width:100%;
+  max-width:420px;
+  margin:0;
+  background:white;
+}
+
 .mirror-grid{
   display:grid;
   grid-template-columns:minmax(0,1fr);
