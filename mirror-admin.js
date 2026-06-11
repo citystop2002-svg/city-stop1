@@ -1,4 +1,8 @@
 (function(){
+  if(!firebase.apps.length){
+    firebase.initializeApp(firebaseConfig);
+  }
+
   const mirrorDb = firebase.firestore();
   const mirrorAuth = firebase.auth();
   const localPersistence = firebase.auth.Auth && firebase.auth.Auth.Persistence
