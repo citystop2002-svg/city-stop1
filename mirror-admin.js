@@ -142,6 +142,30 @@
     }[side];
   }
 
+  function isPairSide(side){
+    const text = String(side || "").toLowerCase();
+    return text.includes("par");
+  }
+
+  function saleBillableQty(sale){
+    return n(sale.billableQty || (isPairSide(sale.side) ? n(sale.qty) * 2 : sale.qty));
+  }
+
+  function saleTotalValue(sale){
+    const expected = saleBillableQty(sale) * n(sale.unitSale) + n(sale.cardFee);
+    return isPairSide(sale.side) && n(sale.totalSale) < expected ? expected : n(sale.totalSale);
+  }
+
+  function saleTotalCost(sale){
+    const expected = saleBillableQty(sale) * n(sale.unitCost);
+    return isPairSide(sale.side) && n(sale.totalCost) < expected ? expected : n(sale.totalCost);
+  }
+
+  function saleProfitValue(sale){
+    const expected = saleTotalValue(sale) - saleTotalCost(sale);
+    return isPairSide(sale.side) && n(sale.profit) !== expected ? expected : n(sale.profit);
+  }
+
   function renderMirrorInventory(){
     const text = ($("mirrorSearch").value || "").toLowerCase();
     const type = $("mirrorTypeFilter").value;
@@ -268,7 +292,7 @@
 
   function syncPairQuantity(){
     const qtyInput = $("mirrorSaleQty");
-    const isPair = $("mirrorSaleSide").value === "Par L R";
+    const isPair = isPairSide($("mirrorSaleSide").value);
     if(isPair){
       qtyInput.value = 1;
       qtyInput.readOnly = true;
@@ -283,7 +307,7 @@
   function calculateMirrorSale(){
     const qty = n($("mirrorSaleQty").value);
     const side = $("mirrorSaleSide").value;
-    const billableQty = side === "Par L R" ? qty * 2 : qty;
+    const billableQty = isPairSide(side) ? qty * 2 : qty;
     const unitCost = n($("mirrorUnitCost").value);
     const unitSale = n($("mirrorUnitSale").value);
     const method = $("mirrorPaymentMethod").value;
@@ -313,7 +337,7 @@
     }
 
     const side = $("mirrorSaleSide").value;
-    if(side === "Par L R"){
+    if(isPairSide(side)){
       $("mirrorSaleQty").value = 1;
     }
     const data = calculateMirrorSale();
@@ -334,7 +358,7 @@
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        if(side === "Par L R"){
+        if(isPairSide(side)){
           if(n(current.mirrorLeft) < 1 || n(current.mirrorRight) < 1){
             throw new Error("No hay stock suficiente.");
           }
@@ -409,12 +433,12 @@
         <td>${formatMoney(sale.unitCost)}</td>
         <td>${formatMoney(sale.unitSale)}</td>
         <td>${sale.paymentMethod || ""}</td>
-        <td>${formatMoney(sale.profit)}</td>
+        <td>${formatMoney(saleProfitValue(sale))}</td>
         <td><button class="delete-row" data-delete-mirror-sale="${sale.id}">Eliminar</button></td>
       </tr>
     `).join("") : `<tr><td colspan="8">Sin ventas registradas.</td></tr>`;
 
-    const registeredTotal = mirrorSales.reduce((sum, sale) => sum + n(sale.totalSale), 0);
+    const registeredTotal = mirrorSales.reduce((sum, sale) => sum + saleTotalValue(sale), 0);
     if($("mirrorRegisteredSalesTotal")){
       $("mirrorRegisteredSalesTotal").textContent = formatMoney(registeredTotal);
     }
@@ -442,7 +466,7 @@
           total: n(product.total) + n(sale.qty),
           updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
-        if(sale.side === "Par L R"){
+        if(isPairSide(sale.side)){
           updates.mirrorLeft = n(product.mirrorLeft) + n(sale.qty);
           updates.mirrorRight = n(product.mirrorRight) + n(sale.qty);
           updates.total = n(product.total) + n(sale.qty) * 2;
@@ -557,17 +581,17 @@
     const date = $("mirrorReportDate").value;
     const monthRows = mirrorSales.filter(sale => (sale.date || "").startsWith(month));
     const dayRows = mirrorSales.filter(sale => sale.date === date);
-    const soldQty = sale => n(sale.billableQty || (sale.side === "Par L R" ? n(sale.qty) * 2 : sale.qty));
+    const soldQty = saleBillableQty;
 
-    $("mirrorMonthSales").value = formatMoney(monthRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
-    $("mirrorMonthProfit").value = formatMoney(monthRows.reduce((sum, sale) => sum + n(sale.profit), 0));
+    $("mirrorMonthSales").value = formatMoney(monthRows.reduce((sum, sale) => sum + saleTotalValue(sale), 0));
+    $("mirrorMonthProfit").value = formatMoney(monthRows.reduce((sum, sale) => sum + saleProfitValue(sale), 0));
     $("mirrorDayQty").textContent = dayRows.reduce((sum, sale) => sum + soldQty(sale), 0);
-    $("mirrorDaySales").textContent = formatMoney(dayRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
-    $("mirrorDayProfit").textContent = formatMoney(dayRows.reduce((sum, sale) => sum + n(sale.profit), 0));
+    $("mirrorDaySales").textContent = formatMoney(dayRows.reduce((sum, sale) => sum + saleTotalValue(sale), 0));
+    $("mirrorDayProfit").textContent = formatMoney(dayRows.reduce((sum, sale) => sum + saleProfitValue(sale), 0));
 
     const byDate = {};
     monthRows.forEach(sale => {
-      byDate[sale.date] = (byDate[sale.date] || 0) + n(sale.profit);
+      byDate[sale.date] = (byDate[sale.date] || 0) + saleProfitValue(sale);
     });
     const days = Object.keys(byDate).sort();
     const max = Math.max(...days.map(day => byDate[day]), 1);
@@ -586,9 +610,9 @@
         <td>${sale.productName || ""}</td>
         <td>${sale.side || ""}</td>
         <td>${soldQty(sale)}</td>
-        <td>${formatMoney(sale.unitSale)}</td>
-        <td>${formatMoney(sale.totalSale)}</td>
-        <td>${formatMoney(sale.profit)}</td>
+        <td>${formatMoney(sale.unitCost)}</td>
+        <td>${formatMoney(saleTotalValue(sale))}</td>
+        <td>${formatMoney(saleProfitValue(sale))}</td>
         <td><button class="delete-row" data-delete-mirror-sale="${sale.id}">Eliminar</button></td>
       </tr>
     `).join("") : `<tr><td colspan="9">No hay ventas registradas para este mes.</td></tr>`;
@@ -610,14 +634,14 @@
       if(!byDate[date]){
         byDate[date] = { qty: 0, totalSale: 0, profit: 0 };
       }
-      byDate[date].qty += n(sale.billableQty || (sale.side === "Par L R" ? n(sale.qty) * 2 : sale.qty));
-      byDate[date].totalSale += n(sale.totalSale);
-      byDate[date].profit += n(sale.profit);
+      byDate[date].qty += saleBillableQty(sale);
+      byDate[date].totalSale += saleTotalValue(sale);
+      byDate[date].profit += saleProfitValue(sale);
     });
 
-    const totalSale = monthRows.reduce((sum, sale) => sum + n(sale.totalSale), 0);
-    const totalProfit = monthRows.reduce((sum, sale) => sum + n(sale.profit), 0);
-    const totalQty = monthRows.reduce((sum, sale) => sum + n(sale.billableQty || (sale.side === "Par L R" ? n(sale.qty) * 2 : sale.qty)), 0);
+    const totalSale = monthRows.reduce((sum, sale) => sum + saleTotalValue(sale), 0);
+    const totalProfit = monthRows.reduce((sum, sale) => sum + saleProfitValue(sale), 0);
+    const totalQty = monthRows.reduce((sum, sale) => sum + saleBillableQty(sale), 0);
 
     const salesRows = monthRows.map(sale => `
       <tr>
@@ -625,13 +649,13 @@
         <td>${escapeCell(sale.productId)}</td>
         <td>${escapeCell(sale.productName)}</td>
         <td>${escapeCell(sale.side)}</td>
-        <td>${n(sale.billableQty || (sale.side === "Par L R" ? n(sale.qty) * 2 : sale.qty))}</td>
+        <td>${saleBillableQty(sale)}</td>
         <td>${n(sale.unitCost)}</td>
         <td>${n(sale.unitSale)}</td>
         <td>${n(sale.cardFee)}</td>
-        <td>${n(sale.totalSale)}</td>
-        <td>${n(sale.totalCost)}</td>
-        <td>${n(sale.profit)}</td>
+        <td>${saleTotalValue(sale)}</td>
+        <td>${saleTotalCost(sale)}</td>
+        <td>${saleProfitValue(sale)}</td>
         <td>${escapeCell(sale.paymentMethod)}</td>
         <td>${escapeCell(sale.customer)}</td>
       </tr>
