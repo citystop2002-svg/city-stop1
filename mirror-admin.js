@@ -488,11 +488,6 @@
       </tr>
     `).join("") : `<tr><td colspan="8">Sin ventas registradas.</td></tr>`;
 
-    const registeredTotal = mirrorSales.reduce((sum, sale) => sum + saleTotalValue(sale), 0);
-    if($("mirrorRegisteredSalesTotal")){
-      $("mirrorRegisteredSalesTotal").textContent = formatMoney(registeredTotal);
-    }
-
     document.querySelectorAll("[data-delete-mirror-sale]").forEach(button => {
       button.addEventListener("click", () => deleteMirrorSale(button.dataset.deleteMirrorSale));
     });
