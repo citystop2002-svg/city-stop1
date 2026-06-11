@@ -282,15 +282,17 @@
 
   function calculateMirrorSale(){
     const qty = n($("mirrorSaleQty").value);
+    const side = $("mirrorSaleSide").value;
+    const billableQty = side === "Par L R" ? qty * 2 : qty;
     const unitCost = n($("mirrorUnitCost").value);
     const unitSale = n($("mirrorUnitSale").value);
     const method = $("mirrorPaymentMethod").value;
     const interest = n($("mirrorCardInterest").value);
     const usesCard = method === "Tarjeta crédito";
-    const baseSale = qty * unitSale;
+    const baseSale = billableQty * unitSale;
     const cardFee = usesCard ? baseSale * (interest / 100) : 0;
     const finalSale = baseSale + cardFee;
-    const cost = qty * unitCost;
+    const cost = billableQty * unitCost;
     const profit = finalSale - cost;
 
     $("mirrorCardInterestWrap").classList.toggle("hidden", !usesCard);
@@ -298,9 +300,9 @@
     $("mirrorSaleOut").textContent = formatMoney(finalSale);
     $("mirrorCardFeeOut").textContent = formatMoney(cardFee);
     $("mirrorProfitOut").textContent = formatMoney(profit);
-    $("mirrorUnitProfitOut").textContent = formatMoney(qty ? profit / qty : 0);
+    $("mirrorUnitProfitOut").textContent = formatMoney(billableQty ? profit / billableQty : 0);
 
-    return { qty, unitCost, unitSale, method, interest, cardFee, finalSale, cost, profit };
+    return { qty, billableQty, unitCost, unitSale, method, interest, cardFee, finalSale, cost, profit };
   }
 
   async function saveMirrorSale(){
@@ -363,6 +365,7 @@
           productName: product.name || "",
           side,
           qty: data.qty,
+          billableQty: data.billableQty,
           unitCost: data.unitCost,
           unitSale: data.unitSale,
           paymentMethod: data.method,
@@ -386,6 +389,7 @@
         productName: product.name || "",
         side,
         qty: data.qty,
+        billableQty: data.billableQty,
         date: $("mirrorSaleDate").value,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
@@ -553,10 +557,11 @@
     const date = $("mirrorReportDate").value;
     const monthRows = mirrorSales.filter(sale => (sale.date || "").startsWith(month));
     const dayRows = mirrorSales.filter(sale => sale.date === date);
+    const soldQty = sale => n(sale.billableQty || (sale.side === "Par L R" ? n(sale.qty) * 2 : sale.qty));
 
     $("mirrorMonthSales").value = formatMoney(monthRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
     $("mirrorMonthProfit").value = formatMoney(monthRows.reduce((sum, sale) => sum + n(sale.profit), 0));
-    $("mirrorDayQty").textContent = dayRows.reduce((sum, sale) => sum + n(sale.qty), 0);
+    $("mirrorDayQty").textContent = dayRows.reduce((sum, sale) => sum + soldQty(sale), 0);
     $("mirrorDaySales").textContent = formatMoney(dayRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
     $("mirrorDayProfit").textContent = formatMoney(dayRows.reduce((sum, sale) => sum + n(sale.profit), 0));
 
@@ -578,7 +583,7 @@
       <tr>
         <td>${sale.date || ""}</td>
         <td>${sale.productName || ""}</td>
-        <td>${n(sale.qty)}</td>
+        <td>${soldQty(sale)}</td>
         <td>${formatMoney(sale.totalSale)}</td>
         <td>${formatMoney(sale.profit)}</td>
         <td><button class="delete-row" data-delete-mirror-sale="${sale.id}">Eliminar</button></td>
@@ -602,14 +607,14 @@
       if(!byDate[date]){
         byDate[date] = { qty: 0, totalSale: 0, profit: 0 };
       }
-      byDate[date].qty += n(sale.qty);
+      byDate[date].qty += n(sale.billableQty || (sale.side === "Par L R" ? n(sale.qty) * 2 : sale.qty));
       byDate[date].totalSale += n(sale.totalSale);
       byDate[date].profit += n(sale.profit);
     });
 
     const totalSale = monthRows.reduce((sum, sale) => sum + n(sale.totalSale), 0);
     const totalProfit = monthRows.reduce((sum, sale) => sum + n(sale.profit), 0);
-    const totalQty = monthRows.reduce((sum, sale) => sum + n(sale.qty), 0);
+    const totalQty = monthRows.reduce((sum, sale) => sum + n(sale.billableQty || (sale.side === "Par L R" ? n(sale.qty) * 2 : sale.qty)), 0);
 
     const salesRows = monthRows.map(sale => `
       <tr>
@@ -617,7 +622,7 @@
         <td>${escapeCell(sale.productId)}</td>
         <td>${escapeCell(sale.productName)}</td>
         <td>${escapeCell(sale.side)}</td>
-        <td>${n(sale.qty)}</td>
+        <td>${n(sale.billableQty || (sale.side === "Par L R" ? n(sale.qty) * 2 : sale.qty))}</td>
         <td>${n(sale.unitCost)}</td>
         <td>${n(sale.unitSale)}</td>
         <td>${n(sale.cardFee)}</td>
