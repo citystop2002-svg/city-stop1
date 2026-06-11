@@ -670,7 +670,11 @@
   function renderMirrorReports(){
     const month = $("mirrorReportMonth").value;
     const date = $("mirrorReportDate").value;
+    const reportSearch = ($("mirrorReportSearch")?.value || "").toLowerCase().trim();
     const monthRows = mirrorSales.filter(sale => (sale.date || "").startsWith(month));
+    const visibleMonthRows = reportSearch
+      ? monthRows.filter(sale => `${sale.productId || ""} ${sale.productName || ""} ${sale.side || ""} ${sale.date || ""}`.toLowerCase().includes(reportSearch))
+      : monthRows;
     const dayRows = mirrorSales.filter(sale => sale.date === date);
     const soldQty = saleBillableQty;
 
@@ -694,7 +698,7 @@
       </div>
     `).join("") : `<div class="mirror-bar-row"><strong>Sin ventas</strong><div class="mirror-bar-track"><div class="mirror-bar" style="width:0">$0</div></div><span>$0</span></div>`;
 
-    const sortedMonthRows = sortReportRows(monthRows);
+    const sortedMonthRows = sortReportRows(visibleMonthRows);
     renderReportSortHeaders();
 
     $("mirrorReportRows").innerHTML = sortedMonthRows.length ? sortedMonthRows.map(sale => `
@@ -896,6 +900,7 @@
     });
     $("mirrorReportMonth").addEventListener("input", renderMirrorReports);
     $("mirrorReportDate").addEventListener("input", renderMirrorReports);
+    $("mirrorReportSearch").addEventListener("input", renderMirrorReports);
     document.querySelectorAll("[data-report-sort]").forEach(button => {
       button.addEventListener("click", () => setReportSort(button.dataset.reportSort));
     });
