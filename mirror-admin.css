@@ -15,18 +15,6 @@
   margin:18px auto 34px;
 }
 
-.mirror-auth-check{
-  width:min(420px, calc(100% - 32px));
-  margin:80px auto;
-  padding:18px;
-  border:1px solid #d6dde7;
-  border-radius:10px;
-  background:white;
-  color:#0f4c5c;
-  text-align:center;
-  font-weight:800;
-}
-
 .mirror-admin.mirror-standalone{
   margin-top:0;
   padding:24px;
