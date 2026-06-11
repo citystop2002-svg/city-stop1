@@ -257,7 +257,7 @@
 
   function renderProductOptions(){
     const current = $("mirrorSaleProduct").value;
-    $("mirrorSaleProduct").innerHTML = mirrorProducts
+    $("mirrorSaleProduct").innerHTML = `<option value="">Seleccionar producto</option>` + mirrorProducts
       .map(product => `<option value="${product.id}">${product.name || product.code || product.id}</option>`)
       .join("");
     if($("mirrorProductCodeList")){
@@ -274,7 +274,13 @@
 
   function syncSaleProduct(){
     const product = selectedProduct();
-    if(!product) return;
+    if(!product){
+      if($("mirrorSaleCode")) $("mirrorSaleCode").value = "";
+      $("mirrorUnitCost").value = "";
+      $("mirrorUnitSale").value = "";
+      calculateMirrorSale();
+      return;
+    }
     if($("mirrorSaleCode")){
       $("mirrorSaleCode").value = product.code || product.id || "";
     }
@@ -285,9 +291,27 @@
 
   function syncSaleCode(){
     const product = findProductByCode($("mirrorSaleCode").value);
-    if(!product) return;
+    if(!product){
+      $("mirrorSaleProduct").value = "";
+      syncSaleProduct();
+      return;
+    }
     $("mirrorSaleProduct").value = product.id;
     syncSaleProduct();
+  }
+
+  function resetMirrorSaleForm(){
+    $("mirrorSaleProduct").value = "";
+    if($("mirrorSaleCode")) $("mirrorSaleCode").value = "";
+    $("mirrorSaleSide").value = "Izquierdo";
+    $("mirrorSaleQty").value = 1;
+    $("mirrorUnitCost").value = "";
+    $("mirrorUnitSale").value = "";
+    $("mirrorPaymentMethod").value = "Efectivo";
+    $("mirrorCardInterest").value = 5;
+    $("mirrorCustomer").value = "";
+    syncPairQuantity();
+    calculateMirrorSale();
   }
 
   function syncPairQuantity(){
@@ -419,6 +443,7 @@
       });
 
       toast("Producto registrado");
+      resetMirrorSaleForm();
     }catch(error){
       alert(error.message);
     }
@@ -573,6 +598,7 @@
     ["mirrorNewCode", "mirrorNewName", "mirrorNewProvider", "mirrorNewLeft", "mirrorNewRight", "mirrorNewCost", "mirrorNewPrice"].forEach(id => {
       if($(id)) $(id).value = ["mirrorNewLeft", "mirrorNewRight"].includes(id) ? 0 : "";
     });
+    $("mirrorNewType").value = "mirror";
     toast("Producto registrado");
   }
 
