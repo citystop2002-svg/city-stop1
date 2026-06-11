@@ -23,6 +23,8 @@
   let listeningMirrorData = false;
   let currentUnitCost = 0;
   let currentUnitSale = 0;
+  let reportSortField = "date";
+  let reportSortDirection = "desc";
 
   const money = new Intl.NumberFormat("es-CO", {
     style: "currency",
@@ -166,6 +168,49 @@
   function saleProfitValue(sale){
     const expected = saleTotalValue(sale) - saleTotalCost(sale);
     return isPairSide(sale.side) && n(sale.profit) !== expected ? expected : n(sale.profit);
+  }
+
+  function reportSortValue(sale, field){
+    return {
+      date: sale.date || "",
+      productId: sale.productId || "",
+      productName: sale.productName || "",
+      side: sale.side || "",
+      qty: saleBillableQty(sale),
+      unitCost: n(sale.unitCost),
+      totalSale: saleTotalValue(sale),
+      profit: saleProfitValue(sale)
+    }[field] ?? "";
+  }
+
+  function sortReportRows(rows){
+    return [...rows].sort((a, b) => {
+      const left = reportSortValue(a, reportSortField);
+      const right = reportSortValue(b, reportSortField);
+      const direction = reportSortDirection === "asc" ? 1 : -1;
+      if(typeof left === "number" || typeof right === "number"){
+        return (n(left) - n(right)) * direction;
+      }
+      return String(left).localeCompare(String(right), "es", { numeric: true, sensitivity: "base" }) * direction;
+    });
+  }
+
+  function setReportSort(field){
+    if(reportSortField === field){
+      reportSortDirection = reportSortDirection === "asc" ? "desc" : "asc";
+    }else{
+      reportSortField = field;
+      reportSortDirection = field === "date" ? "desc" : "asc";
+    }
+    renderMirrorReports();
+  }
+
+  function renderReportSortHeaders(){
+    document.querySelectorAll("[data-report-sort]").forEach(button => {
+      const active = button.dataset.reportSort === reportSortField;
+      button.classList.toggle("active", active);
+      button.dataset.direction = active ? reportSortDirection : "";
+    });
   }
 
   function renderMirrorInventory(){
@@ -649,7 +694,10 @@
       </div>
     `).join("") : `<div class="mirror-bar-row"><strong>Sin ventas</strong><div class="mirror-bar-track"><div class="mirror-bar" style="width:0">$0</div></div><span>$0</span></div>`;
 
-    $("mirrorReportRows").innerHTML = monthRows.length ? monthRows.map(sale => `
+    const sortedMonthRows = sortReportRows(monthRows);
+    renderReportSortHeaders();
+
+    $("mirrorReportRows").innerHTML = sortedMonthRows.length ? sortedMonthRows.map(sale => `
       <tr>
         <td>${sale.date || ""}</td>
         <td>${sale.productId || ""}</td>
@@ -848,6 +896,9 @@
     });
     $("mirrorReportMonth").addEventListener("input", renderMirrorReports);
     $("mirrorReportDate").addEventListener("input", renderMirrorReports);
+    document.querySelectorAll("[data-report-sort]").forEach(button => {
+      button.addEventListener("click", () => setReportSort(button.dataset.reportSort));
+    });
 
     if($("mirrorLoginBtn")){
       $("mirrorLoginBtn").addEventListener("click", async () => {

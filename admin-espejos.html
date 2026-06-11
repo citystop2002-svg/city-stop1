@@ -187,7 +187,19 @@
             <h3>Ventas del mes seleccionado</h3>
             <div class="mirror-table-wrap">
               <table>
-                <thead><tr><th>Fecha</th><th>Código</th><th>Producto</th><th>Lado</th><th>Cant.</th><th>Valor unit.</th><th>Venta total</th><th>Ganancia</th><th></th></tr></thead>
+                <thead>
+                  <tr>
+                    <th><button class="sort-head" data-report-sort="date" type="button">Fecha</button></th>
+                    <th><button class="sort-head" data-report-sort="productId" type="button">Código</button></th>
+                    <th><button class="sort-head" data-report-sort="productName" type="button">Producto</button></th>
+                    <th><button class="sort-head" data-report-sort="side" type="button">Lado</button></th>
+                    <th><button class="sort-head" data-report-sort="qty" type="button">Cant.</button></th>
+                    <th><button class="sort-head" data-report-sort="unitCost" type="button">Valor unit.</button></th>
+                    <th><button class="sort-head" data-report-sort="totalSale" type="button">Venta total</button></th>
+                    <th><button class="sort-head" data-report-sort="profit" type="button">Ganancia</button></th>
+                    <th></th>
+                  </tr>
+                </thead>
                 <tbody id="mirrorReportRows"></tbody>
               </table>
             </div>
