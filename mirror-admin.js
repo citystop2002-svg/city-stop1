@@ -24,6 +24,28 @@
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
+  function parseMoney(value){
+    if(typeof value === "number") return n(value);
+    const cleaned = String(value || "").replace(/[^\d-]/g, "");
+    return n(cleaned);
+  }
+
+  function formatMoney(value){
+    return money.format(n(value)).replace(/\u00a0/g, " ");
+  }
+
+  function editableMoney(value){
+    return `$ ${n(value).toLocaleString("es-CO")}`;
+  }
+
+  function escapeCell(value){
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function cleanId(value){
     return (value || `CS-ESP-${Date.now()}`)
       .toString()
@@ -33,7 +55,8 @@
   }
 
   function total(product){
-    return n(product.total);
+    const computed = sideTotal(product);
+    return computed || n(product.total);
   }
 
   function sideTotal(product){
@@ -70,6 +93,15 @@
 
   function selectedProduct(){
     return mirrorProducts.find(product => product.id === $("mirrorSaleProduct").value);
+  }
+
+  function findProductByCode(code){
+    const normalized = String(code || "").trim().toLowerCase();
+    if(!normalized) return null;
+    return mirrorProducts.find(product =>
+      String(product.code || "").trim().toLowerCase() === normalized ||
+      String(product.id || "").trim().toLowerCase() === normalized
+    );
   }
 
   function selectedField(side){
@@ -113,9 +145,9 @@
         <td><input data-mirror-edit="${product.id}:coverRight" type="number" min="0" value="${n(product.coverRight)}"></td>
         <td><input data-mirror-edit="${product.id}:glassLeft" type="number" min="0" value="${n(product.glassLeft)}"></td>
         <td><input data-mirror-edit="${product.id}:glassRight" type="number" min="0" value="${n(product.glassRight)}"></td>
-        <td><input data-mirror-edit="${product.id}:total" type="number" min="0" value="${total(product)}"></td>
-        <td><input data-mirror-edit="${product.id}:unitCost" type="number" min="0" value="${n(product.unitCost)}"></td>
-        <td><input data-mirror-edit="${product.id}:unitPrice" type="number" min="0" value="${n(product.unitPrice)}"></td>
+        <td><input class="total-input" data-mirror-edit="${product.id}:total" type="number" min="0" value="${total(product)}" readonly></td>
+        <td><input class="money-input" data-mirror-edit="${product.id}:unitCost" type="text" inputmode="numeric" value="${editableMoney(product.unitCost)}"></td>
+        <td><input class="money-input" data-mirror-edit="${product.id}:unitPrice" type="text" inputmode="numeric" value="${editableMoney(product.unitPrice)}"></td>
         <td>${productStatus(product)}</td>
       </tr>
     `).join("") : `<tr><td colspan="13">No hay productos de espejos.</td></tr>`;
@@ -130,17 +162,29 @@
 
   async function updateMirrorProductField(event){
     const [id, field] = event.target.dataset.mirrorEdit.split(":");
-    const value = n(event.target.value);
+    const moneyFields = ["unitCost", "unitPrice"];
+    const sideFields = ["mirrorLeft", "mirrorRight", "coverLeft", "coverRight", "glassLeft", "glassRight"];
+    const value = moneyFields.includes(field) ? parseMoney(event.target.value) : n(event.target.value);
     const product = mirrorProducts.find(item => item.id === id);
     if(!product) return;
     product[field] = value;
+    if(moneyFields.includes(field)){
+      event.target.value = editableMoney(value);
+    }
     product.sideTotal = sideTotal(product);
+    if(sideFields.includes(field)){
+      product.total = product.sideTotal;
+    }
     product.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-    await productCol.doc(id).update({
+    const updates = {
       [field]: value,
       sideTotal: product.sideTotal,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    };
+    if(sideFields.includes(field)){
+      updates.total = product.total;
+    }
+    await productCol.doc(id).update(updates);
     await movementsCol.add({
       type: "edit",
       productId: id,
@@ -156,8 +200,8 @@
     const cost = mirrorProducts.reduce((sum, product) => sum + total(product) * n(product.unitCost), 0);
     const sale = mirrorProducts.reduce((sum, product) => sum + total(product) * n(product.unitPrice), 0);
     $("mirrorUnitsTag").textContent = `${units} unidades reales`;
-    $("mirrorCostTag").textContent = `Costo ${money.format(cost)}`;
-    $("mirrorSaleTag").textContent = `Venta ${money.format(sale)}`;
+    $("mirrorCostTag").textContent = `Costo ${formatMoney(cost)}`;
+    $("mirrorSaleTag").textContent = `Venta ${formatMoney(sale)}`;
   }
 
   function renderProductOptions(){
@@ -165,6 +209,12 @@
     $("mirrorSaleProduct").innerHTML = mirrorProducts
       .map(product => `<option value="${product.id}">${product.name || product.code || product.id}</option>`)
       .join("");
+    if($("mirrorProductCodeList")){
+      $("mirrorProductCodeList").innerHTML = mirrorProducts
+        .filter(product => product.code || product.id)
+        .map(product => `<option value="${product.code || product.id}">${product.name || ""}</option>`)
+        .join("");
+    }
     if(current && mirrorProducts.some(product => product.id === current)){
       $("mirrorSaleProduct").value = current;
     }
@@ -174,8 +224,32 @@
   function syncSaleProduct(){
     const product = selectedProduct();
     if(!product) return;
+    if($("mirrorSaleCode")){
+      $("mirrorSaleCode").value = product.code || product.id || "";
+    }
     $("mirrorUnitCost").value = n(product.unitCost);
     $("mirrorUnitSale").value = n(product.unitPrice);
+    calculateMirrorSale();
+  }
+
+  function syncSaleCode(){
+    const product = findProductByCode($("mirrorSaleCode").value);
+    if(!product) return;
+    $("mirrorSaleProduct").value = product.id;
+    syncSaleProduct();
+  }
+
+  function syncPairQuantity(){
+    const qtyInput = $("mirrorSaleQty");
+    const isPair = $("mirrorSaleSide").value === "Par L R";
+    if(isPair){
+      qtyInput.value = 1;
+      qtyInput.readOnly = true;
+      qtyInput.title = "Un par descuenta 1 izquierdo y 1 derecho.";
+    }else{
+      qtyInput.readOnly = false;
+      qtyInput.title = "";
+    }
     calculateMirrorSale();
   }
 
@@ -193,11 +267,11 @@
     const profit = finalSale - cost;
 
     $("mirrorCardInterestWrap").classList.toggle("hidden", !usesCard);
-    $("mirrorCostOut").textContent = money.format(cost);
-    $("mirrorSaleOut").textContent = money.format(finalSale);
-    $("mirrorCardFeeOut").textContent = money.format(cardFee);
-    $("mirrorProfitOut").textContent = money.format(profit);
-    $("mirrorUnitProfitOut").textContent = money.format(qty ? profit / qty : 0);
+    $("mirrorCostOut").textContent = formatMoney(cost);
+    $("mirrorSaleOut").textContent = formatMoney(finalSale);
+    $("mirrorCardFeeOut").textContent = formatMoney(cardFee);
+    $("mirrorProfitOut").textContent = formatMoney(profit);
+    $("mirrorUnitProfitOut").textContent = formatMoney(qty ? profit / qty : 0);
 
     return { qty, unitCost, unitSale, method, interest, cardFee, finalSale, cost, profit };
   }
@@ -210,6 +284,9 @@
     }
 
     const side = $("mirrorSaleSide").value;
+    if(side === "Par L R"){
+      $("mirrorSaleQty").value = 1;
+    }
     const data = calculateMirrorSale();
     if(data.qty <= 0){
       alert("La cantidad debe ser mayor a 0.");
@@ -229,12 +306,12 @@
         };
 
         if(side === "Par L R"){
-          if(n(current.mirrorLeft) < data.qty || n(current.mirrorRight) < data.qty){
+          if(n(current.mirrorLeft) < 1 || n(current.mirrorRight) < 1){
             throw new Error("No hay stock suficiente.");
           }
-          updates.mirrorLeft = n(current.mirrorLeft) - data.qty;
-          updates.mirrorRight = n(current.mirrorRight) - data.qty;
-          updates.total = Math.max(n(current.total) - data.qty * 2, 0);
+          updates.mirrorLeft = n(current.mirrorLeft) - 1;
+          updates.mirrorRight = n(current.mirrorRight) - 1;
+          updates.total = Math.max(n(current.total) - 2, 0);
         }else{
           const field = selectedField(side);
           if(!field) throw new Error("Selecciona un lado válido.");
@@ -252,6 +329,7 @@
           n(updates.coverRight ?? current.coverRight) +
           n(updates.glassLeft ?? current.glassLeft) +
           n(updates.glassRight ?? current.glassRight);
+        updates.total = updates.sideTotal;
 
         const sale = {
           productId: product.id,
@@ -297,13 +375,18 @@
         <td>${sale.date || ""}</td>
         <td>${sale.productName || ""}</td>
         <td>${sale.side || ""}</td>
-        <td>${money.format(n(sale.unitCost))}</td>
-        <td>${money.format(n(sale.unitSale))}</td>
+        <td>${formatMoney(sale.unitCost)}</td>
+        <td>${formatMoney(sale.unitSale)}</td>
         <td>${sale.paymentMethod || ""}</td>
-        <td>${money.format(n(sale.profit))}</td>
+        <td>${formatMoney(sale.profit)}</td>
         <td><button class="delete-row" data-delete-mirror-sale="${sale.id}">Eliminar</button></td>
       </tr>
     `).join("") : `<tr><td colspan="8">Sin ventas registradas.</td></tr>`;
+
+    const registeredTotal = mirrorSales.reduce((sum, sale) => sum + n(sale.totalSale), 0);
+    if($("mirrorRegisteredSalesTotal")){
+      $("mirrorRegisteredSalesTotal").textContent = formatMoney(registeredTotal);
+    }
 
     document.querySelectorAll("[data-delete-mirror-sale]").forEach(button => {
       button.addEventListener("click", () => deleteMirrorSale(button.dataset.deleteMirrorSale));
@@ -343,6 +426,7 @@
           n(updates.coverRight ?? product.coverRight) +
           n(updates.glassLeft ?? product.glassLeft) +
           n(updates.glassRight ?? product.glassRight);
+        updates.total = updates.sideTotal;
 
         transaction.update(productRef, updates);
         transaction.delete(saleRef);
@@ -376,6 +460,7 @@
         ...product,
         id,
         sideTotal: sideTotal(product),
+        total: sideTotal(product),
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
@@ -430,6 +515,9 @@
     product.sideTotal = sideTotal(product);
 
     await productCol.doc(product.id).set(product, { merge: true });
+    ["mirrorNewCode", "mirrorNewName", "mirrorNewProvider", "mirrorNewLeft", "mirrorNewRight", "mirrorNewCost", "mirrorNewPrice"].forEach(id => {
+      if($(id)) $(id).value = ["mirrorNewLeft", "mirrorNewRight"].includes(id) ? 0 : "";
+    });
     toast("Producto registrado");
   }
 
@@ -439,11 +527,11 @@
     const monthRows = mirrorSales.filter(sale => (sale.date || "").startsWith(month));
     const dayRows = mirrorSales.filter(sale => sale.date === date);
 
-    $("mirrorMonthSales").value = money.format(monthRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
-    $("mirrorMonthProfit").value = money.format(monthRows.reduce((sum, sale) => sum + n(sale.profit), 0));
+    $("mirrorMonthSales").value = formatMoney(monthRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
+    $("mirrorMonthProfit").value = formatMoney(monthRows.reduce((sum, sale) => sum + n(sale.profit), 0));
     $("mirrorDayQty").textContent = dayRows.reduce((sum, sale) => sum + n(sale.qty), 0);
-    $("mirrorDaySales").textContent = money.format(dayRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
-    $("mirrorDayProfit").textContent = money.format(dayRows.reduce((sum, sale) => sum + n(sale.profit), 0));
+    $("mirrorDaySales").textContent = formatMoney(dayRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
+    $("mirrorDayProfit").textContent = formatMoney(dayRows.reduce((sum, sale) => sum + n(sale.profit), 0));
 
     const byDate = {};
     monthRows.forEach(sale => {
@@ -454,8 +542,8 @@
     $("mirrorDailyChart").innerHTML = days.length ? days.map(day => `
       <div class="mirror-bar-row">
         <strong>${day.slice(5)}</strong>
-        <div class="mirror-bar-track"><div class="mirror-bar" style="width:${Math.max((byDate[day] / max) * 100, 4)}%">${money.format(byDate[day])}</div></div>
-        <span>${money.format(byDate[day])}</span>
+        <div class="mirror-bar-track"><div class="mirror-bar" style="width:${Math.max((byDate[day] / max) * 100, 4)}%">${formatMoney(byDate[day])}</div></div>
+        <span>${formatMoney(byDate[day])}</span>
       </div>
     `).join("") : `<div class="mirror-bar-row"><strong>Sin ventas</strong><div class="mirror-bar-track"><div class="mirror-bar" style="width:0">$0</div></div><span>$0</span></div>`;
 
@@ -464,8 +552,8 @@
         <td>${sale.date || ""}</td>
         <td>${sale.productName || ""}</td>
         <td>${n(sale.qty)}</td>
-        <td>${money.format(n(sale.totalSale))}</td>
-        <td>${money.format(n(sale.profit))}</td>
+        <td>${formatMoney(sale.totalSale)}</td>
+        <td>${formatMoney(sale.profit)}</td>
         <td><button class="delete-row" data-delete-mirror-sale="${sale.id}">Eliminar</button></td>
       </tr>
     `).join("") : `<tr><td colspan="6">No hay ventas registradas para esta fecha.</td></tr>`;
@@ -473,6 +561,108 @@
     document.querySelectorAll("[data-delete-mirror-sale]").forEach(button => {
       button.addEventListener("click", () => deleteMirrorSale(button.dataset.deleteMirrorSale));
     });
+  }
+
+  function exportMirrorExcel(){
+    const month = $("mirrorReportMonth")?.value || today.slice(0, 7);
+    const monthRows = mirrorSales
+      .filter(sale => (sale.date || "").startsWith(month))
+      .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+
+    const byDate = {};
+    monthRows.forEach(sale => {
+      const date = sale.date || "Sin fecha";
+      if(!byDate[date]){
+        byDate[date] = { qty: 0, totalSale: 0, profit: 0 };
+      }
+      byDate[date].qty += n(sale.qty);
+      byDate[date].totalSale += n(sale.totalSale);
+      byDate[date].profit += n(sale.profit);
+    });
+
+    const totalSale = monthRows.reduce((sum, sale) => sum + n(sale.totalSale), 0);
+    const totalProfit = monthRows.reduce((sum, sale) => sum + n(sale.profit), 0);
+    const totalQty = monthRows.reduce((sum, sale) => sum + n(sale.qty), 0);
+
+    const salesRows = monthRows.map(sale => `
+      <tr>
+        <td>${escapeCell(sale.date)}</td>
+        <td>${escapeCell(sale.productId)}</td>
+        <td>${escapeCell(sale.productName)}</td>
+        <td>${escapeCell(sale.side)}</td>
+        <td>${n(sale.qty)}</td>
+        <td>${n(sale.unitCost)}</td>
+        <td>${n(sale.unitSale)}</td>
+        <td>${n(sale.cardFee)}</td>
+        <td>${n(sale.totalSale)}</td>
+        <td>${n(sale.totalCost)}</td>
+        <td>${n(sale.profit)}</td>
+        <td>${escapeCell(sale.paymentMethod)}</td>
+        <td>${escapeCell(sale.customer)}</td>
+      </tr>
+    `).join("");
+
+    const dayRows = Object.keys(byDate).sort().map(date => `
+      <tr>
+        <td>${escapeCell(date)}</td>
+        <td>${byDate[date].qty}</td>
+        <td>${byDate[date].totalSale}</td>
+        <td>${byDate[date].profit}</td>
+      </tr>
+    `).join("");
+
+    const workbook = `
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body{font-family:Arial,sans-serif}
+          h1,h2{color:#0f4c5c}
+          table{border-collapse:collapse;margin-bottom:24px;width:100%}
+          th{background:#0f4c5c;color:white}
+          th,td{border:1px solid #b7c4cf;padding:7px;text-align:left}
+          .summary td{font-weight:bold}
+        </style>
+      </head>
+      <body>
+        <h1>Reporte espejos City Stop - ${escapeCell(month)}</h1>
+        <h2>Resumen del mes</h2>
+        <table class="summary">
+          <tr><td>Total unidades vendidas</td><td>${totalQty}</td></tr>
+          <tr><td>Total venta</td><td>${totalSale}</td></tr>
+          <tr><td>Total ganancia</td><td>${totalProfit}</td></tr>
+        </table>
+
+        <h2>Datos diarios para gráfica</h2>
+        <table>
+          <thead><tr><th>Fecha</th><th>Cantidad vendida</th><th>Total venta</th><th>Ganancia</th></tr></thead>
+          <tbody>${dayRows || `<tr><td colspan="4">Sin ventas en este mes</td></tr>`}</tbody>
+        </table>
+
+        <h2>Ventas registradas</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th><th>Código</th><th>Producto</th><th>Lado / pieza</th><th>Cantidad</th>
+              <th>Costo unitario</th><th>Venta unitaria</th><th>Recargo tarjeta</th><th>Total venta</th>
+              <th>Total costo</th><th>Ganancia</th><th>Medio de pago</th><th>Cliente</th>
+            </tr>
+          </thead>
+          <tbody>${salesRows || `<tr><td colspan="13">Sin ventas registradas en este mes</td></tr>`}</tbody>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([workbook], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `reporte-espejos-city-stop-${month}.xls`;
+    document.body.appendChild(link);
+    link.click();
+    URL.revokeObjectURL(link.href);
+    link.remove();
+    toast("Reporte exportado");
   }
 
   function listenMirrorData(){
@@ -500,15 +690,30 @@
     document.querySelectorAll("[data-mirror-view]").forEach(button => {
       button.addEventListener("click", () => showMirrorView(button.dataset.mirrorView));
     });
-    $("mirrorAdminBtn").addEventListener("click", () => {
-      $("mirrorAdmin").scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-    $("mirrorSaleShortcutBtn").addEventListener("click", () => showMirrorView("mirrorSaleView"));
-    $("mirrorSeedBtn").addEventListener("click", seedMirrorInventory);
+    const adminButton = $("mirrorAdminBtn");
+    if(adminButton && !adminButton.getAttribute("href")){
+      adminButton.addEventListener("click", () => {
+        $("mirrorAdmin").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+    if($("mirrorSaleShortcutBtn")){
+      $("mirrorSaleShortcutBtn").addEventListener("click", () => showMirrorView("mirrorSaleView"));
+    }
+    if($("mirrorSeedBtn")){
+      $("mirrorSeedBtn").addEventListener("click", seedMirrorInventory);
+    }
+    if($("mirrorExportExcelBtn")){
+      $("mirrorExportExcelBtn").addEventListener("click", exportMirrorExcel);
+    }
     $("mirrorSaleProduct").addEventListener("change", syncSaleProduct);
+    if($("mirrorSaleCode")){
+      $("mirrorSaleCode").addEventListener("change", syncSaleCode);
+      $("mirrorSaleCode").addEventListener("blur", syncSaleCode);
+    }
     ["mirrorSaleQty", "mirrorUnitCost", "mirrorUnitSale", "mirrorCardInterest"].forEach(id => {
       $(id).addEventListener("input", calculateMirrorSale);
     });
+    $("mirrorSaleSide").addEventListener("change", syncPairQuantity);
     $("mirrorPaymentMethod").addEventListener("change", calculateMirrorSale);
     $("mirrorSaveSaleBtn").addEventListener("click", saveMirrorSale);
     $("mirrorAddProductBtn").addEventListener("click", addMirrorProduct);
@@ -517,11 +722,27 @@
     });
     $("mirrorReportMonth").addEventListener("input", renderMirrorReports);
     $("mirrorReportDate").addEventListener("input", renderMirrorReports);
+
+    if($("mirrorLoginBtn")){
+      $("mirrorLoginBtn").addEventListener("click", () => {
+        const email = $("mirrorEmail").value.trim();
+        const password = $("mirrorPassword").value;
+        mirrorAuth.signInWithEmailAndPassword(email, password).catch(error => alert(error.message));
+      });
+    }
+    if($("mirrorLogoutBtn")){
+      $("mirrorLogoutBtn").addEventListener("click", () => mirrorAuth.signOut());
+    }
+    syncPairQuantity();
   }
 
   initMirrorAdmin();
 
   mirrorAuth.onAuthStateChanged(user => {
+    if($("mirrorLoginBox") && $("mirrorPagePanel")){
+      $("mirrorLoginBox").style.display = user ? "none" : "block";
+      $("mirrorPagePanel").style.display = user ? "block" : "none";
+    }
     if(user){
       listenMirrorData();
     }

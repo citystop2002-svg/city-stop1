@@ -6,6 +6,20 @@
   background:#f4f6f8;
 }
 
+.mirror-standalone-body{
+  background:#eef3f4;
+}
+
+.mirror-page-panel{
+  width:min(1480px, calc(100% - 32px));
+  margin:18px auto 34px;
+}
+
+.mirror-admin.mirror-standalone{
+  margin-top:0;
+  padding:24px;
+}
+
 .mirror-head{
   display:flex;
   justify-content:space-between;
@@ -35,6 +49,21 @@
   display:flex;
   gap:8px;
   flex-wrap:wrap;
+}
+
+.mirror-open-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  padding:0 16px;
+  border-radius:8px;
+  border:0;
+  background:#0f4c5c;
+  color:white;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:800;
 }
 
 .mirror-admin button{
@@ -147,6 +176,16 @@
   margin:0;
 }
 
+.mirror-table-wrap input.money-input{
+  min-width:118px;
+}
+
+.mirror-table-wrap input.total-input{
+  background:#eef3f4;
+  color:#0f4c5c;
+  font-weight:800;
+}
+
 .mirror-card{
   background:white;
   border:1px solid #d6dde7;
@@ -157,6 +196,19 @@
 .mirror-card h3{
   margin-bottom:14px;
   color:#182230;
+}
+
+.mirror-sales-total{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin:-4px 0 12px;
+  color:#344054;
+  font-size:14px;
+}
+
+.mirror-sales-total strong{
+  color:#0f4c5c;
 }
 
 .mirror-grid{
