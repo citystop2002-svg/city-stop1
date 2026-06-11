@@ -748,6 +748,10 @@
 
   initMirrorAdmin();
 
+  if(!$("mirrorLoginBox")){
+    listenMirrorData();
+  }
+
   mirrorAuth.onAuthStateChanged(user => {
     if($("mirrorLoginBox") && $("mirrorPagePanel")){
       $("mirrorLoginBox").style.display = user ? "none" : "block";
