@@ -55,6 +55,7 @@ function mostrarProductos(lista){
     const ladoClase = lado.toLowerCase().includes("ambos") ? " side-badge-both" : "";
     const modelo = producto.modelo ? `Modelo ${producto.modelo}` : "";
     const detalles = [modelo, producto.tipo, producto.detalle].filter(Boolean);
+    const codigoProducto = producto.codigoReal || producto.codigo || "";
 
     const mensaje = `
 Hola City Stop
@@ -66,7 +67,7 @@ Marca: ${marca || ""}
 Lado: ${lado || ""}
 Modelo: ${producto.modelo || ""}
 Tipo: ${producto.tipo || ""}
-Codigo: ${producto.codigo || ""}
+Codigo producto: ${codigoProducto}
 Precio: ${producto.precio || ""}
 Estado: ${producto.stock || ""}
 Descripcion: ${producto.descripcion || ""}

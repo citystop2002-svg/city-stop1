@@ -295,7 +295,7 @@ function mostrarProductosAdmin(lista){
 
             <small>Marca: ${p.marca || "sin marca"}</small>
 
-            <small>Código: ${p.codigoReal || p.codigo || "sin código"}</small>
+            <small>Código producto: ${p.codigoReal || p.codigo || "sin código"}</small>
             
 
           </div>
