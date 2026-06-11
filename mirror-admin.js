@@ -24,6 +24,20 @@
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
+  function parseMoney(value){
+    if(typeof value === "number") return n(value);
+    const cleaned = String(value || "").replace(/[^\d-]/g, "");
+    return n(cleaned);
+  }
+
+  function formatMoney(value){
+    return money.format(n(value)).replace(/\u00a0/g, " ");
+  }
+
+  function editableMoney(value){
+    return `$ ${n(value).toLocaleString("es-CO")}`;
+  }
+
   function cleanId(value){
     return (value || `CS-ESP-${Date.now()}`)
       .toString()
@@ -33,7 +47,8 @@
   }
 
   function total(product){
-    return n(product.total);
+    const computed = sideTotal(product);
+    return computed || n(product.total);
   }
 
   function sideTotal(product){
@@ -113,9 +128,9 @@
         <td><input data-mirror-edit="${product.id}:coverRight" type="number" min="0" value="${n(product.coverRight)}"></td>
         <td><input data-mirror-edit="${product.id}:glassLeft" type="number" min="0" value="${n(product.glassLeft)}"></td>
         <td><input data-mirror-edit="${product.id}:glassRight" type="number" min="0" value="${n(product.glassRight)}"></td>
-        <td><input data-mirror-edit="${product.id}:total" type="number" min="0" value="${total(product)}"></td>
-        <td><input data-mirror-edit="${product.id}:unitCost" type="number" min="0" value="${n(product.unitCost)}"></td>
-        <td><input data-mirror-edit="${product.id}:unitPrice" type="number" min="0" value="${n(product.unitPrice)}"></td>
+        <td><input class="total-input" data-mirror-edit="${product.id}:total" type="number" min="0" value="${total(product)}" readonly></td>
+        <td><input class="money-input" data-mirror-edit="${product.id}:unitCost" type="text" inputmode="numeric" value="${editableMoney(product.unitCost)}"></td>
+        <td><input class="money-input" data-mirror-edit="${product.id}:unitPrice" type="text" inputmode="numeric" value="${editableMoney(product.unitPrice)}"></td>
         <td>${productStatus(product)}</td>
       </tr>
     `).join("") : `<tr><td colspan="13">No hay productos de espejos.</td></tr>`;
@@ -130,17 +145,29 @@
 
   async function updateMirrorProductField(event){
     const [id, field] = event.target.dataset.mirrorEdit.split(":");
-    const value = n(event.target.value);
+    const moneyFields = ["unitCost", "unitPrice"];
+    const sideFields = ["mirrorLeft", "mirrorRight", "coverLeft", "coverRight", "glassLeft", "glassRight"];
+    const value = moneyFields.includes(field) ? parseMoney(event.target.value) : n(event.target.value);
     const product = mirrorProducts.find(item => item.id === id);
     if(!product) return;
     product[field] = value;
+    if(moneyFields.includes(field)){
+      event.target.value = editableMoney(value);
+    }
     product.sideTotal = sideTotal(product);
+    if(sideFields.includes(field)){
+      product.total = product.sideTotal;
+    }
     product.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
-    await productCol.doc(id).update({
+    const updates = {
       [field]: value,
       sideTotal: product.sideTotal,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    };
+    if(sideFields.includes(field)){
+      updates.total = product.total;
+    }
+    await productCol.doc(id).update(updates);
     await movementsCol.add({
       type: "edit",
       productId: id,
@@ -156,8 +183,8 @@
     const cost = mirrorProducts.reduce((sum, product) => sum + total(product) * n(product.unitCost), 0);
     const sale = mirrorProducts.reduce((sum, product) => sum + total(product) * n(product.unitPrice), 0);
     $("mirrorUnitsTag").textContent = `${units} unidades reales`;
-    $("mirrorCostTag").textContent = `Costo ${money.format(cost)}`;
-    $("mirrorSaleTag").textContent = `Venta ${money.format(sale)}`;
+    $("mirrorCostTag").textContent = `Costo ${formatMoney(cost)}`;
+    $("mirrorSaleTag").textContent = `Venta ${formatMoney(sale)}`;
   }
 
   function renderProductOptions(){
@@ -179,6 +206,20 @@
     calculateMirrorSale();
   }
 
+  function syncPairQuantity(){
+    const qtyInput = $("mirrorSaleQty");
+    const isPair = $("mirrorSaleSide").value === "Par L R";
+    if(isPair){
+      qtyInput.value = 1;
+      qtyInput.readOnly = true;
+      qtyInput.title = "Un par descuenta 1 izquierdo y 1 derecho.";
+    }else{
+      qtyInput.readOnly = false;
+      qtyInput.title = "";
+    }
+    calculateMirrorSale();
+  }
+
   function calculateMirrorSale(){
     const qty = n($("mirrorSaleQty").value);
     const unitCost = n($("mirrorUnitCost").value);
@@ -193,11 +234,11 @@
     const profit = finalSale - cost;
 
     $("mirrorCardInterestWrap").classList.toggle("hidden", !usesCard);
-    $("mirrorCostOut").textContent = money.format(cost);
-    $("mirrorSaleOut").textContent = money.format(finalSale);
-    $("mirrorCardFeeOut").textContent = money.format(cardFee);
-    $("mirrorProfitOut").textContent = money.format(profit);
-    $("mirrorUnitProfitOut").textContent = money.format(qty ? profit / qty : 0);
+    $("mirrorCostOut").textContent = formatMoney(cost);
+    $("mirrorSaleOut").textContent = formatMoney(finalSale);
+    $("mirrorCardFeeOut").textContent = formatMoney(cardFee);
+    $("mirrorProfitOut").textContent = formatMoney(profit);
+    $("mirrorUnitProfitOut").textContent = formatMoney(qty ? profit / qty : 0);
 
     return { qty, unitCost, unitSale, method, interest, cardFee, finalSale, cost, profit };
   }
@@ -210,6 +251,9 @@
     }
 
     const side = $("mirrorSaleSide").value;
+    if(side === "Par L R"){
+      $("mirrorSaleQty").value = 1;
+    }
     const data = calculateMirrorSale();
     if(data.qty <= 0){
       alert("La cantidad debe ser mayor a 0.");
@@ -229,12 +273,12 @@
         };
 
         if(side === "Par L R"){
-          if(n(current.mirrorLeft) < data.qty || n(current.mirrorRight) < data.qty){
+          if(n(current.mirrorLeft) < 1 || n(current.mirrorRight) < 1){
             throw new Error("No hay stock suficiente.");
           }
-          updates.mirrorLeft = n(current.mirrorLeft) - data.qty;
-          updates.mirrorRight = n(current.mirrorRight) - data.qty;
-          updates.total = Math.max(n(current.total) - data.qty * 2, 0);
+          updates.mirrorLeft = n(current.mirrorLeft) - 1;
+          updates.mirrorRight = n(current.mirrorRight) - 1;
+          updates.total = Math.max(n(current.total) - 2, 0);
         }else{
           const field = selectedField(side);
           if(!field) throw new Error("Selecciona un lado válido.");
@@ -252,6 +296,7 @@
           n(updates.coverRight ?? current.coverRight) +
           n(updates.glassLeft ?? current.glassLeft) +
           n(updates.glassRight ?? current.glassRight);
+        updates.total = updates.sideTotal;
 
         const sale = {
           productId: product.id,
@@ -297,13 +342,18 @@
         <td>${sale.date || ""}</td>
         <td>${sale.productName || ""}</td>
         <td>${sale.side || ""}</td>
-        <td>${money.format(n(sale.unitCost))}</td>
-        <td>${money.format(n(sale.unitSale))}</td>
+        <td>${formatMoney(sale.unitCost)}</td>
+        <td>${formatMoney(sale.unitSale)}</td>
         <td>${sale.paymentMethod || ""}</td>
-        <td>${money.format(n(sale.profit))}</td>
+        <td>${formatMoney(sale.profit)}</td>
         <td><button class="delete-row" data-delete-mirror-sale="${sale.id}">Eliminar</button></td>
       </tr>
     `).join("") : `<tr><td colspan="8">Sin ventas registradas.</td></tr>`;
+
+    const registeredTotal = mirrorSales.reduce((sum, sale) => sum + n(sale.totalSale), 0);
+    if($("mirrorRegisteredSalesTotal")){
+      $("mirrorRegisteredSalesTotal").textContent = formatMoney(registeredTotal);
+    }
 
     document.querySelectorAll("[data-delete-mirror-sale]").forEach(button => {
       button.addEventListener("click", () => deleteMirrorSale(button.dataset.deleteMirrorSale));
@@ -343,6 +393,7 @@
           n(updates.coverRight ?? product.coverRight) +
           n(updates.glassLeft ?? product.glassLeft) +
           n(updates.glassRight ?? product.glassRight);
+        updates.total = updates.sideTotal;
 
         transaction.update(productRef, updates);
         transaction.delete(saleRef);
@@ -376,6 +427,7 @@
         ...product,
         id,
         sideTotal: sideTotal(product),
+        total: sideTotal(product),
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
@@ -439,11 +491,11 @@
     const monthRows = mirrorSales.filter(sale => (sale.date || "").startsWith(month));
     const dayRows = mirrorSales.filter(sale => sale.date === date);
 
-    $("mirrorMonthSales").value = money.format(monthRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
-    $("mirrorMonthProfit").value = money.format(monthRows.reduce((sum, sale) => sum + n(sale.profit), 0));
+    $("mirrorMonthSales").value = formatMoney(monthRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
+    $("mirrorMonthProfit").value = formatMoney(monthRows.reduce((sum, sale) => sum + n(sale.profit), 0));
     $("mirrorDayQty").textContent = dayRows.reduce((sum, sale) => sum + n(sale.qty), 0);
-    $("mirrorDaySales").textContent = money.format(dayRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
-    $("mirrorDayProfit").textContent = money.format(dayRows.reduce((sum, sale) => sum + n(sale.profit), 0));
+    $("mirrorDaySales").textContent = formatMoney(dayRows.reduce((sum, sale) => sum + n(sale.totalSale), 0));
+    $("mirrorDayProfit").textContent = formatMoney(dayRows.reduce((sum, sale) => sum + n(sale.profit), 0));
 
     const byDate = {};
     monthRows.forEach(sale => {
@@ -454,8 +506,8 @@
     $("mirrorDailyChart").innerHTML = days.length ? days.map(day => `
       <div class="mirror-bar-row">
         <strong>${day.slice(5)}</strong>
-        <div class="mirror-bar-track"><div class="mirror-bar" style="width:${Math.max((byDate[day] / max) * 100, 4)}%">${money.format(byDate[day])}</div></div>
-        <span>${money.format(byDate[day])}</span>
+        <div class="mirror-bar-track"><div class="mirror-bar" style="width:${Math.max((byDate[day] / max) * 100, 4)}%">${formatMoney(byDate[day])}</div></div>
+        <span>${formatMoney(byDate[day])}</span>
       </div>
     `).join("") : `<div class="mirror-bar-row"><strong>Sin ventas</strong><div class="mirror-bar-track"><div class="mirror-bar" style="width:0">$0</div></div><span>$0</span></div>`;
 
@@ -464,8 +516,8 @@
         <td>${sale.date || ""}</td>
         <td>${sale.productName || ""}</td>
         <td>${n(sale.qty)}</td>
-        <td>${money.format(n(sale.totalSale))}</td>
-        <td>${money.format(n(sale.profit))}</td>
+        <td>${formatMoney(sale.totalSale)}</td>
+        <td>${formatMoney(sale.profit)}</td>
         <td><button class="delete-row" data-delete-mirror-sale="${sale.id}">Eliminar</button></td>
       </tr>
     `).join("") : `<tr><td colspan="6">No hay ventas registradas para esta fecha.</td></tr>`;
@@ -500,15 +552,19 @@
     document.querySelectorAll("[data-mirror-view]").forEach(button => {
       button.addEventListener("click", () => showMirrorView(button.dataset.mirrorView));
     });
-    $("mirrorAdminBtn").addEventListener("click", () => {
-      $("mirrorAdmin").scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+    const adminButton = $("mirrorAdminBtn");
+    if(adminButton && !adminButton.getAttribute("href")){
+      adminButton.addEventListener("click", () => {
+        $("mirrorAdmin").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
     $("mirrorSaleShortcutBtn").addEventListener("click", () => showMirrorView("mirrorSaleView"));
     $("mirrorSeedBtn").addEventListener("click", seedMirrorInventory);
     $("mirrorSaleProduct").addEventListener("change", syncSaleProduct);
     ["mirrorSaleQty", "mirrorUnitCost", "mirrorUnitSale", "mirrorCardInterest"].forEach(id => {
       $(id).addEventListener("input", calculateMirrorSale);
     });
+    $("mirrorSaleSide").addEventListener("change", syncPairQuantity);
     $("mirrorPaymentMethod").addEventListener("change", calculateMirrorSale);
     $("mirrorSaveSaleBtn").addEventListener("click", saveMirrorSale);
     $("mirrorAddProductBtn").addEventListener("click", addMirrorProduct);
@@ -517,11 +573,27 @@
     });
     $("mirrorReportMonth").addEventListener("input", renderMirrorReports);
     $("mirrorReportDate").addEventListener("input", renderMirrorReports);
+
+    if($("mirrorLoginBtn")){
+      $("mirrorLoginBtn").addEventListener("click", () => {
+        const email = $("mirrorEmail").value.trim();
+        const password = $("mirrorPassword").value;
+        mirrorAuth.signInWithEmailAndPassword(email, password).catch(error => alert(error.message));
+      });
+    }
+    if($("mirrorLogoutBtn")){
+      $("mirrorLogoutBtn").addEventListener("click", () => mirrorAuth.signOut());
+    }
+    syncPairQuantity();
   }
 
   initMirrorAdmin();
 
   mirrorAuth.onAuthStateChanged(user => {
+    if($("mirrorLoginBox") && $("mirrorPagePanel")){
+      $("mirrorLoginBox").style.display = user ? "none" : "block";
+      $("mirrorPagePanel").style.display = user ? "block" : "none";
+    }
     if(user){
       listenMirrorData();
     }

@@ -3,173 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin City Stop</title>
+  <title>Admin Espejos City Stop</title>
   <link rel="stylesheet" href="admin.css">
   <link rel="stylesheet" href="mirror-admin.css">
 </head>
 
-<body>
-
-  <div class="login" id="loginBox">
-    <h1>Admin City Stop</h1>
-
-    <input type="email" id="email" placeholder="Correo">
-    <input type="password" id="password" placeholder="Contraseña">
-
-    <button id="loginBtn">Ingresar</button>
+<body class="mirror-standalone-body">
+  <div class="login mirror-login" id="mirrorLoginBox">
+    <h1>Admin Espejos</h1>
+    <input type="email" id="mirrorEmail" placeholder="Correo">
+    <input type="password" id="mirrorPassword" placeholder="Contraseña">
+    <button id="mirrorLoginBtn">Ingresar</button>
   </div>
 
-  <div class="panel" id="adminPanel">
-
-    <div class="panel-header">
-      <h1>Panel Administrador</h1>
-      <button id="logoutBtn">Cerrar sesión</button>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h3>Total</h3>
-        <p id="totalCount">0</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Disponibles</h3>
-        <p id="availableCount">0</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Agotados</h3>
-        <p id="soldOutCount">0</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Pocas unidades</h3>
-        <p id="lowCount">0</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>Últimas piezas</h3>
-        <p id="lastCount">0</p>
-      </div>
-    </div>
-
-    <div class="top-buttons">
-      <button id="showFormBtn">➕ Agregar producto</button>
-      <button id="importBtn">🚀 Importar productos actuales</button>
-      <a id="mirrorAdminBtn" class="mirror-open-link" href="admin-espejos.html" target="_blank" rel="noopener">🪞 Admin espejos</a>
-    </div>
-
-    <form id="productForm">
-
-      <input type="hidden" id="productId">
-
-      <input id="codigo" placeholder="Código ejemplo: producto1">
-
-      <input id="nombre" placeholder="Nombre producto">
-
-      <input id="precio" placeholder="Precio">
-
-      <input id="marca" placeholder="Marca ejemplo: ford">
-
-      <div class="quantity-row">
-        <select id="lado">
-          <option value="">Lado del espejo</option>
-          <option>Izquierdo</option>
-          <option>Derecho</option>
-          <option>Ambos lados</option>
-        </select>
-
-        <input id="modelo" placeholder="Modelo ejemplo: 2017-2019">
-      </div>
-
-      <div class="quantity-row">
-        <select id="tipo">
-          <option value="">Tipo</option>
-          <option>Eléctrico</option>
-          <option>Manual</option>
-        </select>
-
-        <input id="detalle" placeholder="Detalle ejemplo: Con direccional">
-      </div>
-
-      <div class="quantity-row">
-      <input id="cantidadIzquierdo" type="number" min="0" placeholder="Cantidad izquierdo">
-      <input id="cantidadDerecho" type="number" min="0" placeholder="Cantidad derecho">
-      </div>
-      <div class="quantity-row">
-      <input id="precioCompra" type="number" min="0" placeholder="Precio compra">
-      <input id="precioVenta" type="number" min="0" placeholder="Precio venta">
-      </div>
-      <input id="descuento" placeholder="Descuento visible ejemplo: 10% OFF">
-
-      <textarea id="descripcion" placeholder="Descripción"></textarea>
-
-      <select id="stock">
-        <option>Disponible</option>
-        <option>Pocas Unidades</option>
-        <option>Agotado</option>
-        <option>Últimas piezas</option>
-      </select>
-
-      <button type="submit">Guardar producto</button>
-
-    </form>
-
-    <div class="admin-layout">
-
-      <aside class="admin-sidebar">
-
-        <h2>BUSCAR</h2>
-
-        <input
-        type="text"
-        id="adminSearch"
-        placeholder="Nombre, código o marca...">
-
-        <h2>MARCAS</h2>
-
-        <select id="brandFilter">
-          <option value="todos">Todas las marcas</option>
-          <option value="toyota">Toyota</option>
-          <option value="mazda">Mazda</option>
-          <option value="chevrolet">Chevrolet</option>
-          <option value="kia">Kia</option>
-          <option value="renault">Renault</option>
-          <option value="ford">Ford</option>
-          <option value="hyundai">Hyundai</option>
-          <option value="mercedes">Mercedes</option>
-        </select>
-
-        <h2>ESTADO</h2>
-
-        <select id="stockFilter">
-          <option value="todos">Todos</option>
-          <option value="disponible">Disponible</option>
-          <option value="pocas unidades">Pocas unidades</option>
-          <option value="agotado">Agotado</option>
-          <option value="últimas piezas">Últimas piezas</option>
-        </select>
-
-        <button id="clearFiltersBtn" class="clear-btn">
-          Limpiar filtros
-        </button>
-
-      </aside>
-
-      <section class="admin-products">
-
-        <div class="results-header">
-          <h2>Productos</h2>
-          <span id="adminCounter">0 encontrados</span>
-        </div>
-
-        <div id="productList"></div>
-
-      </section>
-
-    </div>
-
-    <section class="mirror-admin" id="mirrorAdmin">
+  <div class="mirror-page-panel" id="mirrorPagePanel" style="display:none">
+    <section class="mirror-admin mirror-standalone" id="mirrorAdmin">
       <div class="mirror-head">
         <div>
           <p class="mirror-location">Inventario / Espejos</p>
@@ -177,8 +25,10 @@
           <p>Inventario por lado, registro de ventas, ganancias y reportes.</p>
         </div>
         <div class="mirror-actions">
+          <a class="mirror-open-link" href="admin.html">Volver al admin</a>
           <button id="mirrorSeedBtn" type="button">Cargar inventario ESPEJOS</button>
           <button id="mirrorSaleShortcutBtn" type="button">Registrar espejo</button>
+          <button id="mirrorLogoutBtn" type="button">Cerrar sesión</button>
         </div>
       </div>
 
@@ -192,8 +42,8 @@
       <div id="mirrorInventoryView" class="mirror-view active">
         <div class="mirror-summary">
           <span id="mirrorUnitsTag">0 unidades reales</span>
-          <span id="mirrorCostTag">Costo $0</span>
-          <span id="mirrorSaleTag">Venta $0</span>
+          <span id="mirrorCostTag">Costo $ 0</span>
+          <span id="mirrorSaleTag">Venta $ 0</span>
         </div>
 
         <div class="mirror-filters">
@@ -275,11 +125,11 @@
             </div>
             <button id="mirrorSaveSaleBtn" type="button">Guardar registro</button>
             <div class="mirror-result">
-              <div><span>Costo total</span><strong id="mirrorCostOut">$0</strong></div>
-              <div><span>Venta total</span><strong id="mirrorSaleOut">$0</strong></div>
-              <div><span>Recargo tarjeta</span><strong id="mirrorCardFeeOut">$0</strong></div>
-              <div><span>Ganancia total</span><strong id="mirrorProfitOut">$0</strong></div>
-              <div><span>Ganancia por unidad</span><strong id="mirrorUnitProfitOut">$0</strong></div>
+              <div><span>Costo total</span><strong id="mirrorCostOut">$ 0</strong></div>
+              <div><span>Venta total</span><strong id="mirrorSaleOut">$ 0</strong></div>
+              <div><span>Recargo tarjeta</span><strong id="mirrorCardFeeOut">$ 0</strong></div>
+              <div><span>Ganancia total</span><strong id="mirrorProfitOut">$ 0</strong></div>
+              <div><span>Ganancia por unidad</span><strong id="mirrorUnitProfitOut">$ 0</strong></div>
             </div>
           </section>
 
@@ -331,8 +181,8 @@
             </div>
             <div class="mirror-result">
               <div><span>Espejos vendidos hoy</span><strong id="mirrorDayQty">0</strong></div>
-              <div><span>Venta del día</span><strong id="mirrorDaySales">$0</strong></div>
-              <div><span>Ganancia del día</span><strong id="mirrorDayProfit">$0</strong></div>
+              <div><span>Venta del día</span><strong id="mirrorDaySales">$ 0</strong></div>
+              <div><span>Ganancia del día</span><strong id="mirrorDayProfit">$ 0</strong></div>
             </div>
             <div id="mirrorDailyChart" class="mirror-chart"></div>
           </section>
@@ -349,7 +199,6 @@
         </div>
       </div>
     </section>
-
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -357,11 +206,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
   <script src="firebase-config.js"></script>
-  <script src="productos.js"></script>
   <script src="mirror-data.js"></script>
-  <script src="admin.js"></script>
   <script src="mirror-admin.js"></script>
-
 </body>
 </html>
-
