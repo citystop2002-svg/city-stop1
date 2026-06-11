@@ -1,6 +1,7 @@
 firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
 const db = firebase.firestore();
 
 const loginBox = document.getElementById("loginBox");

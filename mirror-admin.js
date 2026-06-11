@@ -1,6 +1,7 @@
 (function(){
   const mirrorDb = firebase.firestore();
   const mirrorAuth = firebase.auth();
+  mirrorAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
   const productCol = mirrorDb.collection("mirror_products");
   const salesCol = mirrorDb.collection("mirror_sales");
   const movementsCol = mirrorDb.collection("mirror_inventory_movements");
@@ -695,6 +696,10 @@
       adminButton.addEventListener("click", () => {
         $("mirrorAdmin").scrollIntoView({ behavior: "smooth", block: "start" });
       });
+    }else if(adminButton){
+      adminButton.addEventListener("click", () => {
+        localStorage.setItem("mirrorAdminLastOpen", String(Date.now()));
+      });
     }
     if($("mirrorSaleShortcutBtn")){
       $("mirrorSaleShortcutBtn").addEventListener("click", () => showMirrorView("mirrorSaleView"));
@@ -740,6 +745,9 @@
 
   mirrorAuth.onAuthStateChanged(user => {
     if($("mirrorLoginBox") && $("mirrorPagePanel")){
+      if($("mirrorAuthCheck")){
+        $("mirrorAuthCheck").style.display = "none";
+      }
       $("mirrorLoginBox").style.display = user ? "none" : "block";
       $("mirrorPagePanel").style.display = user ? "block" : "none";
     }
