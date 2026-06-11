@@ -87,6 +87,15 @@
     return mirrorProducts.find(product => product.id === $("mirrorSaleProduct").value);
   }
 
+  function findProductByCode(code){
+    const normalized = String(code || "").trim().toLowerCase();
+    if(!normalized) return null;
+    return mirrorProducts.find(product =>
+      String(product.code || "").trim().toLowerCase() === normalized ||
+      String(product.id || "").trim().toLowerCase() === normalized
+    );
+  }
+
   function selectedField(side){
     return {
       "Izquierdo": "mirrorLeft",
@@ -192,6 +201,12 @@
     $("mirrorSaleProduct").innerHTML = mirrorProducts
       .map(product => `<option value="${product.id}">${product.name || product.code || product.id}</option>`)
       .join("");
+    if($("mirrorProductCodeList")){
+      $("mirrorProductCodeList").innerHTML = mirrorProducts
+        .filter(product => product.code || product.id)
+        .map(product => `<option value="${product.code || product.id}">${product.name || ""}</option>`)
+        .join("");
+    }
     if(current && mirrorProducts.some(product => product.id === current)){
       $("mirrorSaleProduct").value = current;
     }
@@ -201,9 +216,19 @@
   function syncSaleProduct(){
     const product = selectedProduct();
     if(!product) return;
+    if($("mirrorSaleCode")){
+      $("mirrorSaleCode").value = product.code || product.id || "";
+    }
     $("mirrorUnitCost").value = n(product.unitCost);
     $("mirrorUnitSale").value = n(product.unitPrice);
     calculateMirrorSale();
+  }
+
+  function syncSaleCode(){
+    const product = findProductByCode($("mirrorSaleCode").value);
+    if(!product) return;
+    $("mirrorSaleProduct").value = product.id;
+    syncSaleProduct();
   }
 
   function syncPairQuantity(){
@@ -482,6 +507,9 @@
     product.sideTotal = sideTotal(product);
 
     await productCol.doc(product.id).set(product, { merge: true });
+    ["mirrorNewCode", "mirrorNewName", "mirrorNewProvider", "mirrorNewLeft", "mirrorNewRight", "mirrorNewCost", "mirrorNewPrice"].forEach(id => {
+      if($(id)) $(id).value = ["mirrorNewLeft", "mirrorNewRight"].includes(id) ? 0 : "";
+    });
     toast("Producto registrado");
   }
 
@@ -561,6 +589,10 @@
     $("mirrorSaleShortcutBtn").addEventListener("click", () => showMirrorView("mirrorSaleView"));
     $("mirrorSeedBtn").addEventListener("click", seedMirrorInventory);
     $("mirrorSaleProduct").addEventListener("change", syncSaleProduct);
+    if($("mirrorSaleCode")){
+      $("mirrorSaleCode").addEventListener("change", syncSaleCode);
+      $("mirrorSaleCode").addEventListener("blur", syncSaleCode);
+    }
     ["mirrorSaleQty", "mirrorUnitCost", "mirrorUnitSale", "mirrorCardInterest"].forEach(id => {
       $(id).addEventListener("input", calculateMirrorSale);
     });
