@@ -289,7 +289,7 @@ function mostrarProductosAdmin(lista){
 
             <small>Marca: ${p.marca || "sin marca"}</small>
 
-            <small>Código producto: ${p.codigoReal || p.codigo || "sin código"}</small>
+            <small>Código real: ${p.codigoReal || "pendiente"}</small>
             <small>Compra: $${p.precioCompra || 0} | Venta: $${p.precioVenta || 0}</small>
             
 
