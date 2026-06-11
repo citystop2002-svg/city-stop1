@@ -79,6 +79,16 @@
   margin-bottom:14px;
 }
 
+.mirror-auth-message{
+  margin:0 0 14px;
+  padding:12px 14px;
+  border:1px solid #f7c566;
+  border-radius:8px;
+  background:#fff8e5;
+  color:#7a4b00;
+  font-weight:800;
+}
+
 .mirror-tabs button{
   background:white;
   color:#0f4c5c;
