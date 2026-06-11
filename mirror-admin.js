@@ -38,6 +38,14 @@
     return `$ ${n(value).toLocaleString("es-CO")}`;
   }
 
+  function escapeCell(value){
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   function cleanId(value){
     return (value || `CS-ESP-${Date.now()}`)
       .toString()
@@ -555,6 +563,108 @@
     });
   }
 
+  function exportMirrorExcel(){
+    const month = $("mirrorReportMonth")?.value || today.slice(0, 7);
+    const monthRows = mirrorSales
+      .filter(sale => (sale.date || "").startsWith(month))
+      .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+
+    const byDate = {};
+    monthRows.forEach(sale => {
+      const date = sale.date || "Sin fecha";
+      if(!byDate[date]){
+        byDate[date] = { qty: 0, totalSale: 0, profit: 0 };
+      }
+      byDate[date].qty += n(sale.qty);
+      byDate[date].totalSale += n(sale.totalSale);
+      byDate[date].profit += n(sale.profit);
+    });
+
+    const totalSale = monthRows.reduce((sum, sale) => sum + n(sale.totalSale), 0);
+    const totalProfit = monthRows.reduce((sum, sale) => sum + n(sale.profit), 0);
+    const totalQty = monthRows.reduce((sum, sale) => sum + n(sale.qty), 0);
+
+    const salesRows = monthRows.map(sale => `
+      <tr>
+        <td>${escapeCell(sale.date)}</td>
+        <td>${escapeCell(sale.productId)}</td>
+        <td>${escapeCell(sale.productName)}</td>
+        <td>${escapeCell(sale.side)}</td>
+        <td>${n(sale.qty)}</td>
+        <td>${n(sale.unitCost)}</td>
+        <td>${n(sale.unitSale)}</td>
+        <td>${n(sale.cardFee)}</td>
+        <td>${n(sale.totalSale)}</td>
+        <td>${n(sale.totalCost)}</td>
+        <td>${n(sale.profit)}</td>
+        <td>${escapeCell(sale.paymentMethod)}</td>
+        <td>${escapeCell(sale.customer)}</td>
+      </tr>
+    `).join("");
+
+    const dayRows = Object.keys(byDate).sort().map(date => `
+      <tr>
+        <td>${escapeCell(date)}</td>
+        <td>${byDate[date].qty}</td>
+        <td>${byDate[date].totalSale}</td>
+        <td>${byDate[date].profit}</td>
+      </tr>
+    `).join("");
+
+    const workbook = `
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body{font-family:Arial,sans-serif}
+          h1,h2{color:#0f4c5c}
+          table{border-collapse:collapse;margin-bottom:24px;width:100%}
+          th{background:#0f4c5c;color:white}
+          th,td{border:1px solid #b7c4cf;padding:7px;text-align:left}
+          .summary td{font-weight:bold}
+        </style>
+      </head>
+      <body>
+        <h1>Reporte espejos City Stop - ${escapeCell(month)}</h1>
+        <h2>Resumen del mes</h2>
+        <table class="summary">
+          <tr><td>Total unidades vendidas</td><td>${totalQty}</td></tr>
+          <tr><td>Total venta</td><td>${totalSale}</td></tr>
+          <tr><td>Total ganancia</td><td>${totalProfit}</td></tr>
+        </table>
+
+        <h2>Datos diarios para gráfica</h2>
+        <table>
+          <thead><tr><th>Fecha</th><th>Cantidad vendida</th><th>Total venta</th><th>Ganancia</th></tr></thead>
+          <tbody>${dayRows || `<tr><td colspan="4">Sin ventas en este mes</td></tr>`}</tbody>
+        </table>
+
+        <h2>Ventas registradas</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th><th>Código</th><th>Producto</th><th>Lado / pieza</th><th>Cantidad</th>
+              <th>Costo unitario</th><th>Venta unitaria</th><th>Recargo tarjeta</th><th>Total venta</th>
+              <th>Total costo</th><th>Ganancia</th><th>Medio de pago</th><th>Cliente</th>
+            </tr>
+          </thead>
+          <tbody>${salesRows || `<tr><td colspan="13">Sin ventas registradas en este mes</td></tr>`}</tbody>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([workbook], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `reporte-espejos-city-stop-${month}.xls`;
+    document.body.appendChild(link);
+    link.click();
+    URL.revokeObjectURL(link.href);
+    link.remove();
+    toast("Reporte exportado");
+  }
+
   function listenMirrorData(){
     if(unsubProducts) unsubProducts();
     if(unsubSales) unsubSales();
@@ -586,8 +696,15 @@
         $("mirrorAdmin").scrollIntoView({ behavior: "smooth", block: "start" });
       });
     }
-    $("mirrorSaleShortcutBtn").addEventListener("click", () => showMirrorView("mirrorSaleView"));
-    $("mirrorSeedBtn").addEventListener("click", seedMirrorInventory);
+    if($("mirrorSaleShortcutBtn")){
+      $("mirrorSaleShortcutBtn").addEventListener("click", () => showMirrorView("mirrorSaleView"));
+    }
+    if($("mirrorSeedBtn")){
+      $("mirrorSeedBtn").addEventListener("click", seedMirrorInventory);
+    }
+    if($("mirrorExportExcelBtn")){
+      $("mirrorExportExcelBtn").addEventListener("click", exportMirrorExcel);
+    }
     $("mirrorSaleProduct").addEventListener("change", syncSaleProduct);
     if($("mirrorSaleCode")){
       $("mirrorSaleCode").addEventListener("change", syncSaleCode);
