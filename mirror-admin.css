@@ -234,6 +234,33 @@
   margin-top:14px;
 }
 
+.mirror-pair-totals{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(160px,1fr));
+  gap:10px;
+  margin:0 0 14px;
+}
+
+.mirror-pair-totals div{
+  border:1px solid #a7d4c0;
+  background:#f0fbf6;
+  border-radius:10px;
+  padding:12px;
+}
+
+.mirror-pair-totals span{
+  display:block;
+  color:#176b4d;
+  font-size:12px;
+  margin-bottom:6px;
+  font-weight:800;
+}
+
+.mirror-pair-totals strong{
+  color:#0f4c5c;
+  font-size:18px;
+}
+
 .mirror-result div{
   border:1px solid #d6dde7;
   background:#fbfcfe;
