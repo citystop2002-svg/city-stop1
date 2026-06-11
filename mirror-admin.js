@@ -342,8 +342,14 @@
     const finalSale = baseSale + cardFee;
     const cost = billableQty * unitCost;
     const profit = finalSale - cost;
+    const isPair = isPairSide(side);
 
     $("mirrorCardInterestWrap").classList.toggle("hidden", !usesCard);
+    if($("mirrorPairTotals")){
+      $("mirrorPairTotals").classList.toggle("hidden", !isPair);
+      $("mirrorPairCostOut").textContent = formatMoney(unitCost * 2);
+      $("mirrorPairSaleOut").textContent = formatMoney(unitSale * 2);
+    }
     $("mirrorCostOut").textContent = formatMoney(cost);
     $("mirrorSaleOut").textContent = formatMoney(finalSale);
     $("mirrorCardFeeOut").textContent = formatMoney(cardFee);
