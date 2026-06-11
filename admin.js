@@ -293,19 +293,6 @@ function mostrarProductosAdmin(lista){
             <small>Marca: ${p.marca || "sin marca"}</small>
 
             <small>Código: ${p.codigo || "sin código"}</small>
-            <small>Lado: ${p.lado || "sin lado"} | Modelo: ${p.modelo || "sin modelo"}</small>
-            <small>Tipo: ${p.tipo || "sin tipo"} | Detalle: ${p.detalle || "sin detalle"}</small>
-            <small>
-  Cantidad:
-  Izquierdo: ${p.cantidadIzquierdo || 0} |
-  Derecho: ${p.cantidadDerecho || 0} |
-  Total:
-  ${
-    (parseInt(p.cantidadIzquierdo || 0)) +
-    (parseInt(p.cantidadDerecho || 0))
-  }
-</small>
-<small>Compra: $${p.precioCompra || 0} | Venta: $${p.precioVenta || 0}</small>
             
 
           </div>
