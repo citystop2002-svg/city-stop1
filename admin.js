@@ -121,12 +121,6 @@ productForm.addEventListener("submit", async e => {
       hover: `img/${codigo}-hover.png`,
       descripcion: document.getElementById("descripcion").value.trim(),
       stock: document.getElementById("stock").value,
-      lado: document.getElementById("lado").value,
-      modelo: document.getElementById("modelo").value.trim(),
-      tipo: document.getElementById("tipo").value,
-      detalle: document.getElementById("detalle").value.trim(),
-      cantidadIzquierdo: document.getElementById("cantidadIzquierdo").value || "0",
-      cantidadDerecho: document.getElementById("cantidadDerecho").value || "0",
       precioCompra: document.getElementById("precioCompra").value || "0",
       precioVenta: document.getElementById("precioVenta").value || "0",
       descuento: document.getElementById("descuento").value.trim()
@@ -296,6 +290,7 @@ function mostrarProductosAdmin(lista){
             <small>Marca: ${p.marca || "sin marca"}</small>
 
             <small>Código producto: ${p.codigoReal || p.codigo || "sin código"}</small>
+            <small>Compra: $${p.precioCompra || 0} | Venta: $${p.precioVenta || 0}</small>
             
 
           </div>
@@ -365,14 +360,8 @@ async function editarProducto(id){
   document.getElementById("nombre").value = p.nombre || "";
   document.getElementById("precio").value = p.precio || "";
   document.getElementById("marca").value = p.marca || "";
-  document.getElementById("lado").value = p.lado || "";
-  document.getElementById("modelo").value = p.modelo || "";
-  document.getElementById("tipo").value = p.tipo || "";
-  document.getElementById("detalle").value = p.detalle || "";
   document.getElementById("descripcion").value = p.descripcion || "";
   document.getElementById("stock").value = p.stock || "Disponible";
-  document.getElementById("cantidadIzquierdo").value = p.cantidadIzquierdo || "";
-  document.getElementById("cantidadDerecho").value = p.cantidadDerecho || "";
   document.getElementById("precioCompra").value = p.precioCompra || "";
   document.getElementById("precioVenta").value = p.precioVenta || "";
   document.getElementById("descuento").value = p.descuento || "";
