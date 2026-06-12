@@ -538,7 +538,7 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      toast("Producto registrado");
+      toast("Venta registrada");
       resetMirrorSaleForm();
     }catch(error){
       alert(error.message);
