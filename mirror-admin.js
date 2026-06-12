@@ -234,9 +234,9 @@
 
     $("mirrorInventoryBody").innerHTML = rows.length ? rows.map(product => `
       <tr>
-        <td>${product.code || product.id}</td>
-        <td>${product.name || ""}</td>
-        <td>${product.provider || ""}</td>
+        <td><input class="text-input" data-mirror-edit="${product.id}:code" value="${escapeCell(product.code || product.id)}"></td>
+        <td><input class="name-input" data-mirror-edit="${product.id}:name" value="${escapeCell(product.name || "")}"></td>
+        <td><input class="provider-input" data-mirror-edit="${product.id}:provider" value="${escapeCell(product.provider || "")}"></td>
         <td><input data-mirror-edit="${product.id}:mirrorLeft" type="number" min="0" value="${n(product.mirrorLeft)}"></td>
         <td><input data-mirror-edit="${product.id}:mirrorRight" type="number" min="0" value="${n(product.mirrorRight)}"></td>
         <td><input data-mirror-edit="${product.id}:coverLeft" type="number" min="0" value="${n(product.coverLeft)}"></td>
@@ -247,11 +247,15 @@
         <td><input class="money-input" data-mirror-edit="${product.id}:unitCost" type="text" inputmode="numeric" value="${editableMoney(product.unitCost)}"></td>
         <td><input class="money-input" data-mirror-edit="${product.id}:unitPrice" type="text" inputmode="numeric" value="${editableMoney(product.unitPrice)}"></td>
         <td>${productStatus(product)}</td>
+        <td><button class="delete-row" data-delete-mirror-product="${product.id}" type="button">Eliminar</button></td>
       </tr>
-    `).join("") : `<tr><td colspan="13">No hay productos de espejos.</td></tr>`;
+    `).join("") : `<tr><td colspan="14">No hay productos de espejos.</td></tr>`;
 
     document.querySelectorAll("[data-mirror-edit]").forEach(input => {
       input.addEventListener("change", updateMirrorProductField);
+    });
+    document.querySelectorAll("[data-delete-mirror-product]").forEach(button => {
+      button.addEventListener("click", () => deleteMirrorProduct(button.dataset.deleteMirrorProduct));
     });
 
     renderMirrorTotals();
@@ -262,7 +266,12 @@
     const [id, field] = event.target.dataset.mirrorEdit.split(":");
     const moneyFields = ["unitCost", "unitPrice"];
     const sideFields = ["mirrorLeft", "mirrorRight", "coverLeft", "coverRight", "glassLeft", "glassRight"];
-    const value = moneyFields.includes(field) ? parseMoney(event.target.value) : n(event.target.value);
+    const textFields = ["code", "name", "provider"];
+    const value = textFields.includes(field)
+      ? event.target.value.trim()
+      : moneyFields.includes(field)
+        ? parseMoney(event.target.value)
+        : n(event.target.value);
     const product = mirrorProducts.find(item => item.id === id);
     if(!product) return;
     product[field] = value;
@@ -291,6 +300,23 @@
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     toast("Producto actualizado");
+  }
+
+  async function deleteMirrorProduct(id){
+    const product = mirrorProducts.find(item => item.id === id);
+    if(!product) return;
+    const label = product.name || product.code || id;
+    if(!confirm(`¿Eliminar "${label}" del inventario de espejos?`)) return;
+
+    await productCol.doc(id).delete();
+    await movementsCol.add({
+      type: "delete_product",
+      productId: id,
+      productName: product.name || "",
+      productCode: product.code || "",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast("Producto eliminado");
   }
 
   function renderMirrorTotals(){

@@ -232,6 +232,18 @@
   min-width:118px;
 }
 
+.mirror-table-wrap input.text-input{
+  min-width:130px;
+}
+
+.mirror-table-wrap input.name-input{
+  min-width:260px;
+}
+
+.mirror-table-wrap input.provider-input{
+  min-width:150px;
+}
+
 .mirror-table-wrap input.total-input{
   background:#eef3f4;
   color:#0f4c5c;
