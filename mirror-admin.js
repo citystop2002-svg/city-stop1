@@ -152,22 +152,22 @@
   }
 
   function saleBillableQty(sale){
-    return n(sale.billableQty || (isPairSide(sale.side) ? n(sale.qty) * 2 : sale.qty));
+    return isPairSide(sale.side) ? 2 : n(sale.billableQty || sale.qty);
   }
 
   function saleTotalValue(sale){
     const expected = saleBillableQty(sale) * n(sale.unitSale) + n(sale.cardFee);
-    return isPairSide(sale.side) && n(sale.totalSale) < expected ? expected : n(sale.totalSale);
+    return isPairSide(sale.side) ? expected : n(sale.totalSale);
   }
 
   function saleTotalCost(sale){
     const expected = saleBillableQty(sale) * n(sale.unitCost);
-    return isPairSide(sale.side) && n(sale.totalCost) < expected ? expected : n(sale.totalCost);
+    return isPairSide(sale.side) ? expected : n(sale.totalCost);
   }
 
   function saleProfitValue(sale){
     const expected = saleTotalValue(sale) - saleTotalCost(sale);
-    return isPairSide(sale.side) && n(sale.profit) !== expected ? expected : n(sale.profit);
+    return isPairSide(sale.side) ? expected : n(sale.profit);
   }
 
   function reportSortValue(sale, field){
